@@ -14,10 +14,11 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 const useStyles = makeStyles((theme) => ({
     grow: {
         flexGrow: 1,
+        height: 68
     },
     title: {
         display: 'none',
-        [theme.breakpoints.up('sm')]: {
+        [theme.breakpoints.up('md')]: {
             display: 'block',
         },
     },
@@ -59,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     sectionDesktop: {
-        display: 'none',
+        display: 'flex',
         [theme.breakpoints.up('md')]: {
             display: 'flex',
         },
@@ -67,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     sectionMobile: {
         display: 'flex',
         [theme.breakpoints.up('md')]: {
-            display: 'none',
+            display: 'block',
         },
     },
 }));

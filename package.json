@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.11.3",
+    "iscroll-luo": "^1.2.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router": "^6.22.1",

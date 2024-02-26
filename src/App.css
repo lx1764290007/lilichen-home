@@ -8,3 +8,12 @@
     overflow-y: hidden;
     background: linear-gradient(to bottom, #f1f1f1, #ececec);
 }
+*::-webkit-scrollbar {
+    width: 5px;
+    background-color: #86cdec;
+}
+*::-webkit-scrollbar-thumb {
+    width: 5px;
+    height: auto;
+    background-color: #435760;
+}
