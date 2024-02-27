@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
@@ -11,6 +11,13 @@ import {ButtonGroup, ClickAwayListener, Fade, Paper, Popper} from "@material-ui/
 import Typography from "@material-ui/core/Typography"
 import {red} from "@material-ui/core/colors";
 import {ImagePreview} from "../../../components/ImagePreviewById/ImagePreview";
+// import Style from "./ImageList.module.css";
+import {useDebounceFn, useMount} from "ahooks";
+import {BONUS} from "../../../tools/tools";
+import {Loading} from "../../../components/Loading/Loading";
+import {useContainerStyle} from "../../../App";
+import vcSubscribePublish from "vc-subscribe-publish";
+import {fetchProductList} from "../../../lib/request/produce";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -25,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
     },
     imageList: {
        // width: 500,
-        height: 'calc(100vh - 64px - 64px)',
         // Promote the list into its own layer in Chrome. This cost memory, but helps keep FPS high.
         transform: 'translateZ(0)',
         cursor: 'pointer'
@@ -97,14 +103,16 @@ const itemData = [
 ];
 export const AdvancedImageList = ()=> {
     const classes = useStyles();
-
+    const classesContainer = useContainerStyle();
     const [open, setOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [testData, setTestData] = useState(itemData);
     const [text, setText] = useState("");
     const newCol = useMemo(()=> autoCol(testData), [testData]);
     const [previewOpen, setPreviewOpen] = useState(false);
-
+    const [touchMoveY, setTouchMoveY] = useState(9999999);
+    const [transformY, setTransformY] = useState(0);
+    const scrollRef = useRef(null);
     // const [newCol, setNewCol] = useState(autoCol(itemData));
     const handleClickDesc = (event, description) => {
         if(open) return
@@ -126,8 +134,63 @@ export const AdvancedImageList = ()=> {
     const previewOnClose = ()=> {
         setPreviewOpen(false);
     }
+    /**
+     * 判断手指前后滑动的距离来判断手指滑动方向，如果在滚动条上方下拉的话则触发下拉加载动画
+     * @param {TouchEvent} event
+     */
+    const onTouchmoveHandler = (event)=> {
+        if(touchMoveY < event.changedTouches[0].clientY && scrollRef.current.scrollTop <= 0){
+            if(transformY < BONUS) {
+                setTransformY(transformY + 1);
+            }
+        }
+        setTouchMoveY(event.changedTouches[0].clientY)
+    }
+    /**
+     * 判断下拉距离是否达到设定的阈值来决定是否要触发下拉加载事件
+     * @param {TouchEvent} event
+     */
+    const onTouchendHandler = (event)=> {
+        setTouchMoveY(999999);
+        if (transformY >= BONUS) {
+            vcSubscribePublish.public("onMessage", "hello world")
+            setTimeout(()=> setTransformY(0), 2000);
+            setTimeout(()=> vcSubscribePublish.public("onMessage", "hello world again"), 2000);
+        } else {
+            setTransformY(0)
+        }
+    }
+    // const handLoadMore = ()=> {
+    //     console.log("load more")
+    // }
+    const onscrollHandler = ({target})=> {
+        const scrollHeight = target.scrollHeight, scrollTop = target.scrollTop, {height} = target.getBoundingClientRect();
+        if(scrollHeight - scrollTop -height <= BONUS) {
+            console.log("it work!")
+        }
+
+    }
+    const {
+        run
+    } = useDebounceFn(
+        onscrollHandler,
+        {
+            wait: 200
+        }
+    );
+    const fetchData = async ()=> {
+        fetchProductList({
+            current: 1,
+            size: 10
+        }).then(res=>{
+            console.log(res)
+        })
+    }
+    useMount(()=>{
+        fetchData();
+    })
     return (
-        <div className={classes.root}>
+        <div className={classes.root} >
             <Popper open={open} anchorEl={anchorEl} placement={"top-start"} transition>
                 {({ TransitionProps }) => (
                     <Fade {...TransitionProps} timeout={100}>
@@ -138,7 +201,8 @@ export const AdvancedImageList = ()=> {
                     </Fade>
                 )}
             </Popper>
-            <ImageList rowHeight={230} gap={1} className={classes.imageList}>
+            {transformY >= BONUS/2 && <div style={{position:"absolute", padding: 5, width: "100%"}}><Loading /></div>}
+            <ImageList ref={scrollRef} rowHeight={230} gap={1} style={{transform: `translateY(${transformY}px)`}} className={`${classes.imageList} ${classesContainer.container}`} onTouchEnd={onTouchendHandler} onTouchMove={onTouchmoveHandler} onScroll={run}>
                 {newCol.map((item) => (
                     <ImageListItem key={item.img} cols={item.featured ? 2 : 1} rows={item.featured ? 2 : 1}>
                         <img src={item.img} alt={item.title} />

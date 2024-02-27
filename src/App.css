@@ -10,10 +10,10 @@
 }
 *::-webkit-scrollbar {
     width: 5px;
-    background-color: #86cdec;
+    background-color: #dde1e3;;
 }
 *::-webkit-scrollbar-thumb {
     width: 5px;
     height: auto;
-    background-color: #435760;
+    background-color: #a79adc;
 }

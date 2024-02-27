@@ -12,7 +12,11 @@
  */
 export const autoCol = (params = []) => {
     return params.map((it, index) => {
-        it.featured = index % 2 === 0 ? Math.random() > 0.55 : params[index - 1].featured;
+        if(index === 0) {
+            it.featured = true;
+        } else it.featured = index % 2 === 0 ? Math.random() > 0.65 : params[index - 1].featured;
         return it;
     });
 }
+
+export const BONUS = 30;

@@ -1,23 +1,44 @@
 import './App.css';
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import {HomePage} from "./views/home/Home";
-import {BottomNavigation, createTheme, ThemeProvider} from "@material-ui/core";
+import React, {useMemo, useState} from 'react';
+import {Route, Routes, useLocation, useNavigate} from 'react-router-dom';
+import {BottomNavigation, createTheme, Snackbar, ThemeProvider} from "@material-ui/core";
 import {indigo} from '@material-ui/core/colors';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
-import HomeIcon from '@material-ui/icons/HomeWork';
-import UserIcon from '@material-ui/icons/AccountBox';
-import SettingIcon from '@material-ui/icons/Settings';
-import {useNavigate} from "react-router-dom";
-import RedditIcon from '@material-ui/icons/Reddit';
+import Container from "@material-ui/core/Container";
+import {routes} from "./routes/Routes";
+import vcSubscribePublish from "vc-subscribe-publish";
+import {useMount} from "ahooks";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from '@material-ui/icons/Close';
 
-const useStyles = makeStyles({
-    root: {
+const useStyles = makeStyles((theme) => ({
+    menuButton: {
+        marginRight: theme.spacing(2),
+    },
+    title: {
+        flexGrow: 1,
+    },
+    bottomBar: {
         height: 64,
         backgroundColor: indigo[100]
     },
-});
+    snackbar: {
+        [theme.breakpoints.down('xs')]: {
+            bottom: 60,
+        }
+    }
+}));
+export const useContainerStyle = makeStyles((theme) => ({
+    container: {
+        height: `calc(100vh - 64px - 64px)`
+    }
+}));
+export const useContainerWithoutNavigationBarStyle = makeStyles((theme) => ({
+    container: {
+        height: `calc(100vh - 64px)`
+    }
+}));
 const outerTheme = createTheme({
     palette: {
         primary: {
@@ -25,35 +46,85 @@ const outerTheme = createTheme({
         },
     },
 });
+const Style = {
+    container: {
+        backgroundColor: 'aliceblue',
+        padding: 0
+    }
+}
 
 function App() {
     const classes = useStyles();
     const navigate = useNavigate();
-    const [value, setValue] = React.useState(0);
+    const location = useLocation();
+    const appBar = useMemo(() => routes.find(it => it.path === location.pathname)?.appBar, [location]);
+    const menuValue_ = useMemo(() => routes.find(it => it.path === location.pathname)?.path, [location]);
+    const bottomNavigationBarShow = useMemo(() => routes.find(it => it.path === location.pathname)?.bottomNavigationBarShow, [location]);
+    const [messageOpen, setMessageOpen] = useState(false);
+    const [message, setMessage] = useState("UNKNOWN");
+    const onRouteChangeHandler = (_, newValue) => {
+        // setMenuValue(newValue);
+        navigate(newValue);
+    }
+    useMount(() => {
+        vcSubscribePublish.subscribe("onMessage", (args) => {
+            setMessageOpen(false);
+            setMessage(args[0]);
+            setMessageOpen(true);
+        });
+        vcSubscribePublish.subscribe("onNavigate", (args) => {
+            navigate(args[0]);
+        })
+    })
     return (
         <div className="App">
             <ThemeProvider theme={outerTheme}>
-            <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/page1" element={<div>page1</div>} />
-                <Route path="/page2" element={<div>page2</div>} />
-            </Routes>
-                <BottomNavigation
-                    value={value}
-                    onChange={(event, newValue) => {
-                        setValue(newValue);
-                        navigate(newValue === 0? "/":newValue===1? "/page1":"/page2");
+                <Container style={Style.container} maxWidth="md" fixed>
+                    {appBar}
+                    <Routes>
+                        {
+                            routes.map(item => {
+                                return <Route path={item.path} key={item.path} name={item.name}
+                                              element={item.component}/>
+                            })
+                        }
+                    </Routes>
+                    {bottomNavigationBarShow && <BottomNavigation
+                        value={menuValue_}
+                        size={"sm"}
+                        className={classes.bottomBar}
+                        onChange={onRouteChangeHandler}
+                        showLabels
+                    >
+                        {
+                            routes.filter(it => {
+                                return it.navigation
+                            }).map(it => {
+                                return <BottomNavigationAction key={it.name} value={it.path} label={it.name}
+                                                               icon={it.icon}/>
+                            })
+                        }
+                    </BottomNavigation>}
+                </Container>
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
                     }}
-                    size={"sm"}
-                    showLabels
-                    className={classes.root}
-                >
-                    <BottomNavigationAction label="产品" icon={<HomeIcon />} />
-                    <BottomNavigationAction label="供应商" icon={<RedditIcon />} />
-                    <BottomNavigationAction label="用户" icon={<UserIcon />} />
-                    <BottomNavigationAction label="系统" icon={<SettingIcon />} />
-
-                </BottomNavigation>
+                    className={classes.snackbar}
+                    open={messageOpen}
+                    autoHideDuration={3000}
+                    onClose={() => setMessageOpen(false)}
+                    message={message}
+                    action={
+                        <React.Fragment>
+                            <IconButton size="small" aria-label="close" color="inherit"
+                                        onClick={() => setMessageOpen(false)}>
+                                <CloseIcon fontSize="small"/>
+                            </IconButton>
+                        </React.Fragment>
+                    }
+                />
             </ThemeProvider>
         </div>
     );
