@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -29,7 +29,8 @@ const useStyles = makeStyles((theme) => ({
     },
     preview: {
         width: '100%',
-        height: 'auto'
+        height: 'auto',
+        maxHeight: 200
     },
     previewText: {
         position: 'absolute',
@@ -46,15 +47,24 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         boxSizing: 'border-box',
         overflowX: 'auto',
-        whiteSpace: 'nowrap'
+        whiteSpace: 'nowrap',
+        display: 'flex',
+        flexFlow: 'row nowrap',
+        alignItems: 'flex-end',
+        overflowY: 'hidden'
     },
     img: {
         width: '14ch',
         height: 'auto',
-        marginRight: theme.spacing(1)
+        maxHeight: '15ch',
+
     },
     imgWrapper: {
-        display: 'inline-block'
+        display: 'inline-block',
+        height: '16ch',
+        border: '1px solid #ccc',
+        boxSizing: 'border-box',
+        marginRight: theme.spacing(1)
     },
     fab: {
         position: 'fixed',
@@ -70,18 +80,21 @@ export const Back = () => {
     }
     return <IconButton className={classes.back} onClick={onClick}><ArrowBackIosIcon/></IconButton>
 }
-
+const _data = [];
 export const ProductItem = () => {
+
     const classes = useStyles();
     const classesContainer = useContainerWithoutNavigationBarStyle();
-    const [paths, setPaths] = useSafeState([]);
+    const [paths, setPaths] = useSafeState("");
+    const p = useMemo(()=> _data.filter(it=> it), [paths]);
     const uploadHandle = async (formData)=> {
         const res = await fetchUploadProduct(formData);
         uploadDone(res?.path);
     }
     const uploadDone = (path)=> {
         if(path) {
-            setPaths([path, ...paths]);
+            _data.push(path);
+            setPaths(path);
         }
     }
     const onSelectFile = (event)=> {
@@ -95,12 +108,12 @@ export const ProductItem = () => {
     }
     return (
         <div className={`${classes.root} ${classesContainer.container}`}>
-            {paths[0] && <><Typography className={classes.previewText}>这是列表里的预览图</Typography>
+            {p[0] && <><Typography className={classes.previewText}>这是列表里的预览图</Typography>
             <img
-                src={paths[0]}
+                src={p[0]}
                 alt={"大预览"} className={classes.preview}/></> }
             <div className={classes.previewList}>
-                {paths.map((it, key)=> {
+                {p.map((it, key)=> {
                     return <div key={key} className={classes.imgWrapper}>
                         <img className={classes.img}
                              src={it}
