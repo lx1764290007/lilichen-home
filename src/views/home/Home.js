@@ -7,7 +7,7 @@ export const HomePage = ()=> {
     return (
         <React.Fragment>
             <CssBaseline />
-             <AdvancedImageList />
+            <AdvancedImageList />
         </React.Fragment>
     );
 }

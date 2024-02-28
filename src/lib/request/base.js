@@ -72,21 +72,31 @@ export const useFetch = function (data) {
                 onResponseError(err, reject);
 
             });
-        } else {
-
+        } else if(data.config?.method?.toUpperCase() === "FILE"){
             fetch(BASE_URL + url || "", {
+                body: data.data,
+                credentials: "include",
+                mode: "cors", // no-cors, *cors, same-origin
+                cache: "no-cache",
                 ...data.config,
+                method: "POST"
+            }).then((res) => {
+                onResponseHandle(res, resolve, reject);
+            }).catch((err) => {
+                eventBus.public("onMessage", "error", err?.message);
+            });
+        } else {
+            fetch(BASE_URL + url || "", {
                 body: JSON.stringify(data.data),
                 headers: {"Content-Type": "application/json;charset=utf-8"},
                 credentials: "include",
                 mode: "cors", // no-cors, *cors, same-origin
-                cache: "no-cache"
+                cache: "no-cache",
+                ...data.config
             }).then((res) => {
                 onResponseHandle(res, resolve, reject);
             }).catch((err) => {
-
                 eventBus.public("onMessage", "error", err?.message);
-
             });
         }
     }).catch((e) => {

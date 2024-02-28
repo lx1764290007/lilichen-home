@@ -4,25 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="87509d30-8b8a-4ae5-8a47-9e5c8fef5e33" name="变更" comment="[ADD] 基础产品列表">
-      <change afterPath="$PROJECT_DIR$/.babelrc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/git_toolbox_prj.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/AppBar/Toobar.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/Loading/Loading.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/lib/request/base.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/lib/request/produce.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/routes/Routes.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/views/home/create-item/CreateItem.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/views/home/item-list/ImageList.module.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+    <list default="true" id="87509d30-8b8a-4ae5-8a47-9e5c8fef5e33" name="变更" comment="[ADD] request逻辑校验&#10;[ADD] 错误捕捉和反馈逻辑&#10;[ADD] 列表上拉加载和下拉刷新逻辑实现&#10;[FIXED] 修复图片墙如果是全部小图的情况会出现空隙 bug">
+      <change afterPath="$PROJECT_DIR$/src/components/Avatar/Avatar.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/Empty/Empty.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lib/request/login.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lib/request/upload.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lib/static.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/home/item/Product.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tools/tools.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/tools/tools.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/AppBar/Toobar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/AppBar/Toobar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/request/base.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/request/base.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/Routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/Routes.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/home/Home.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/Home.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/home/app-header/AppHeader.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/app-header/AppHeader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/home/create-item/CreateItem.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/home/item-list/ImageList.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/item-list/ImageList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/login/Login.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/login/Login.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,6 +82,9 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\my\lilichen-home\src\views" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\my\lilichen-home\src\lib" />
+    </key>
   </component>
   <component name="RunManager" selected="npm.npm start">
     <configuration name="Debug Application" type="JavascriptDebugType" uri="http://localhost:3000">
@@ -112,7 +113,7 @@
       <workItem from="1708668137861" duration="17279000" />
       <workItem from="1708929138823" duration="10776000" />
       <workItem from="1708998548601" duration="9298000" />
-      <workItem from="1709015709538" duration="10000000" />
+      <workItem from="1709015709538" duration="32919000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <created>1708681096533</created>
@@ -149,7 +150,14 @@
       <option name="project" value="LOCAL" />
       <updated>1708940380696</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="[ADD] request逻辑校验&#10;[ADD] 错误捕捉和反馈逻辑&#10;[ADD] 列表上拉加载和下拉刷新逻辑实现&#10;[FIXED] 修复图片墙如果是全部小图的情况会出现空隙 bug">
+      <created>1709026432744</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1709026432744</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -170,6 +178,7 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <MESSAGE value="init" />
     <MESSAGE value="[ADD] 基础产品列表" />
-    <option name="LAST_COMMIT_MESSAGE" value="[ADD] 基础产品列表" />
+    <MESSAGE value="[ADD] request逻辑校验&#10;[ADD] 错误捕捉和反馈逻辑&#10;[ADD] 列表上拉加载和下拉刷新逻辑实现&#10;[FIXED] 修复图片墙如果是全部小图的情况会出现空隙 bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="[ADD] request逻辑校验&#10;[ADD] 错误捕捉和反馈逻辑&#10;[ADD] 列表上拉加载和下拉刷新逻辑实现&#10;[FIXED] 修复图片墙如果是全部小图的情况会出现空隙 bug" />
   </component>
 </project>

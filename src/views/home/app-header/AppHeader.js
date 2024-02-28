@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {alpha, makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -10,6 +10,10 @@ import Menu from '@material-ui/core/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import HomeWorkIcon from '@material-ui/icons/HomeWork';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import {AvatarDefault} from "../../../components/Avatar/Avatar";
+import vcSubscribePublish from "vc-subscribe-publish";
+import {InputAdornment} from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -80,7 +84,7 @@ export const HomePageAppBar = () => {
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
+    const ref = useRef(null);
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -93,7 +97,18 @@ export const HomePageAppBar = () => {
         setAnchorEl(null);
         handleMobileMenuClose();
     };
-
+    const onSubmit = (event)=> {
+        const value = ref.current.querySelector("input")?.value;
+        vcSubscribePublish.public("product-search", value);
+        event.preventDefault();
+    }
+    const onClearHandler = ()=> {
+        const _input = ref.current.querySelector("input");
+        if(_input) {
+            _input.value = "";
+            vcSubscribePublish.public("product-search", "");
+        }
+    }
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
         <Menu
@@ -158,27 +173,42 @@ export const HomePageAppBar = () => {
                         <div className={classes.searchIcon}>
                             <SearchIcon/>
                         </div>
+                        <form onSubmit={onSubmit}>
                         <InputBase
-                            placeholder="搜索…"
+                            ref={ref}
+                            placeholder="根据名称搜索…"
                             classes={{
                                 root: classes.inputRoot,
                                 input: classes.inputInput,
                             }}
                             inputProps={{'aria-label': 'search'}}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="clear input value"
+                                        style={{color: '#fff'}}
+                                        onClick={onClearHandler}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            }
                         />
+                        </form>
                     </div>
                     <div className={classes.grow}/>
                     <div className={classes.sectionDesktop}>
-                        <IconButton
-                            edge="end"
-                            aria-label="account of current user"
-                            aria-controls={menuId}
-                            aria-haspopup="true"
-                            onClick={handleProfileMenuOpen}
-                            color="inherit"
-                        >
-                            <AccountCircle/>
-                        </IconButton>
+                        {/*<IconButton*/}
+                        {/*    edge="end"*/}
+                        {/*    aria-label="account of current user"*/}
+                        {/*    aria-controls={menuId}*/}
+                        {/*    aria-haspopup="true"*/}
+                        {/*    onClick={handleProfileMenuOpen}*/}
+                        {/*    color="inherit"*/}
+                        {/*>*/}
+                        {/*    <AccountCircle/>*/}
+                        {/*</IconButton>*/}
+                        <AvatarDefault aria-controls={menuId} onClick={handleProfileMenuOpen} />
                     </div>
                 </Toolbar>
             </AppBar>

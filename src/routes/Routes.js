@@ -1,21 +1,33 @@
 import {HomePageAppBar} from "../views/home/app-header/AppHeader";
 import {HomePage} from "../views/home/Home";
 import {AppToolbar} from "../components/AppBar/Toobar";
-import {Login} from "../views/login/Login";
+import {Login, LoginAppBarLeft, LoginAppBarRight} from "../views/login/Login";
 import HomeIcon from '@material-ui/icons/HomeWork';
 import UserIcon from '@material-ui/icons/AccountBox';
 import SettingIcon from '@material-ui/icons/Settings';
 import RedditIcon from '@material-ui/icons/Reddit';
+import {ProductItem, Back} from "../views/home/item/Product";
+
 export const routes = [
     {
         component: <HomePage />,
-        title: "hello world",
+        title: "基础产品",
         appBar: <HomePageAppBar />,
         path: "/",
-        name: "产品",
+        name: "基础产品",
         navigation: true,
         icon: <HomeIcon />,
         bottomNavigationBarShow: true
+    },
+    {
+        component: <ProductItem param={'add'} />,
+        title: "产品添加",
+        appBar: <AppToolbar left={<Back />} title={"产品添加"} />,
+        path: "/product-add",
+        name: "产品添加",
+        navigation: true,
+        icon: <HomeIcon />,
+        bottomNavigationBarShow: false
     },
     {
         component: <div>page1</div>,
@@ -42,7 +54,7 @@ export const routes = [
         title: "login",
         path: "/login",
         name: "登录",
-        appBar: <AppToolbar />,
+        appBar: <AppToolbar left={<LoginAppBarLeft />} title={"登 录"} right={<LoginAppBarRight />} />,
         navigation: false,
         icon: null,
         bottomNavigationBarShow: false
