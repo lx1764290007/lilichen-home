@@ -11,6 +11,8 @@ import vcSubscribePublish from "vc-subscribe-publish";
 import {useMount} from "ahooks";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from '@material-ui/icons/Close';
+import Typography from "@material-ui/core/Typography";
+import {ErrorOutline} from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
     menuButton: {
@@ -25,8 +27,31 @@ const useStyles = makeStyles((theme) => ({
     },
     snackbar: {
         [theme.breakpoints.down('xs')]: {
-            bottom: 60,
+             top: 60,
         }
+    },
+    snackbarError: {
+        [theme.breakpoints.down('xs')]: {
+            top: 90
+        }
+    },
+    errorContent: {
+        backgroundColor: '#ea2222',
+        color: '#fff',
+        padding: '8px 16px',
+        borderRadius: 8,
+        textAlign: 'center',
+        minWidth: 300,
+        overflow: 'hidden',
+        wordWrap: 'wrap',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-start'
+    },
+    errorIcon: {
+        fontSize: 'large',
+        marginRight: theme.spacing(2),
+        fontWeight: 700
     }
 }));
 export const useContainerStyle = makeStyles((theme) => ({
@@ -62,6 +87,8 @@ function App() {
     const bottomNavigationBarShow = useMemo(() => routes.find(it => it.path === location.pathname)?.bottomNavigationBarShow, [location]);
     const [messageOpen, setMessageOpen] = useState(false);
     const [message, setMessage] = useState("UNKNOWN");
+    const [errorMessageOpen, setErrorMessageOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("UNKNOWN");
     const onRouteChangeHandler = (_, newValue) => {
         // setMenuValue(newValue);
         navigate(newValue);
@@ -72,9 +99,19 @@ function App() {
             setMessage(args[0]);
             setMessageOpen(true);
         });
+        vcSubscribePublish.subscribe("onErrorMessage", (args) => {
+            setErrorMessageOpen(false);
+            setErrorMessage(args[0]);
+            setErrorMessageOpen(true);
+        });
         vcSubscribePublish.subscribe("onNavigate", (args) => {
             navigate(args[0]);
         })
+        return ()=> {
+            vcSubscribePublish.unsubscribe("onMessage");
+            vcSubscribePublish.unsubscribe("onErrorMessage");
+            vcSubscribePublish.unsubscribe("onNavigate");
+        }
     })
     return (
         <div className="App">
@@ -108,7 +145,7 @@ function App() {
                 </Container>
                 <Snackbar
                     anchorOrigin={{
-                        vertical: 'bottom',
+                        vertical: 'top',
                         horizontal: 'center',
                     }}
                     className={classes.snackbar}
@@ -125,6 +162,17 @@ function App() {
                         </React.Fragment>
                     }
                 />
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'center',
+                        horizontal: 'center',
+                    }}
+                    className={classes.snackbarError}
+                    open={errorMessageOpen} autoHideDuration={3000} onClose={()=> setErrorMessageOpen(false)}>
+                     <div className={classes.errorContent}>
+                         <ErrorOutline className={classes.errorIcon} /><Typography>{errorMessage}</Typography>
+                     </div>
+                </Snackbar>
             </ThemeProvider>
         </div>
     );

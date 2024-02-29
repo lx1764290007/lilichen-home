@@ -6,7 +6,7 @@ import HomeIcon from '@material-ui/icons/HomeWork';
 import UserIcon from '@material-ui/icons/AccountBox';
 import SettingIcon from '@material-ui/icons/Settings';
 import RedditIcon from '@material-ui/icons/Reddit';
-import {ProductItem, Back} from "../views/home/item/Product";
+import {ProductItem, Back, TopRightButton} from "../views/home/item/Product";
 
 export const routes = [
     {
@@ -22,7 +22,7 @@ export const routes = [
     {
         component: <ProductItem param={'add'} />,
         title: "产品添加",
-        appBar: <AppToolbar left={<Back />} title={"产品添加"} />,
+        appBar: <AppToolbar left={<Back />} title={"产品添加"} right={<TopRightButton />} />,
         path: "/product-add",
         name: "产品添加",
         navigation: true,

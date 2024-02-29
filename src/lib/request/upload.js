@@ -10,3 +10,13 @@ export const fetchUploadProduct = async (data)=>{
         data
     });
 };
+export const fetchFileRemove = async (data)=>{
+    return await fetchHandle({
+        url: "file-remove",
+        config: {
+            method: "POST",
+            // headers: {'Content-Type': 'multipart/form-data;'}
+        },
+        data
+    });
+};

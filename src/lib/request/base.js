@@ -23,7 +23,7 @@ export const onResponseHandle = function (res, resolve, reject) {
             logoutHandle();
         }, 1000)();
 
-    } else if (res.status === 412) {
+    } else if (res.status === 412 || res.status === 400) {
         onResponseError(res, reject);
     } else if (res.status === 403) {
         reject(res.message);
@@ -45,13 +45,13 @@ export const onResponseError = (res, reject) => {
     try {
         res.json().then((result) => {
             message = result?.message;
-            eventBus.public("onMessage",  message || result?.message || result?.error);
+            eventBus.public("onErrorMessage",  message || result?.message || result?.error);
             reject(result?.message);
         }).catch(function (e) {
-            eventBus.public("onMessage",  message || e?.message || e?.error);
+            eventBus.public("onErrorMessage",  message || e?.message || e?.error);
         });
     } catch (e) {
-        eventBus.public("onMessage",  message || e?.message || e?.error);
+        eventBus.public("onErrorMessage",  message || e?.message || e?.error);
     }
     // reject && reject(new Error("error"));
 };
@@ -83,7 +83,7 @@ export const useFetch = function (data) {
             }).then((res) => {
                 onResponseHandle(res, resolve, reject);
             }).catch((err) => {
-                eventBus.public("onMessage", "error", err?.message);
+                eventBus.public("onMessage", err?.message);
             });
         } else {
             fetch(BASE_URL + url || "", {
@@ -96,7 +96,7 @@ export const useFetch = function (data) {
             }).then((res) => {
                 onResponseHandle(res, resolve, reject);
             }).catch((err) => {
-                eventBus.public("onMessage", "error", err?.message);
+                eventBus.public("onErrorMessage", err?.message);
             });
         }
     }).catch((e) => {

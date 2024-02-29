@@ -17,7 +17,7 @@ import {Loading} from "../../../components/Loading/Loading";
 import {useContainerStyle} from "../../../App";
 import vcSubscribePublish from "vc-subscribe-publish";
 import {fetchProductList} from "../../../lib/request/produce";
-import {PAGE_SIZE} from "../../../lib/static";
+import {IMAGE_TYPE, PAGE_SIZE} from "../../../lib/static";
 import {Empty} from "../../../components/Empty/Empty";
 import AddIcon from '@material-ui/icons/Add';
 
@@ -25,6 +25,7 @@ import AddIcon from '@material-ui/icons/Add';
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
+        position: 'relative',
         flexWrap: 'wrap',
         // justifyContent: 'space-around',
         overflow: 'hidden',
@@ -53,8 +54,8 @@ const useStyles = makeStyles((theme) => ({
         color: 'white',
     },
     fab: {
-        position: 'fixed',
-        bottom: 80,
+        position: 'absolute',
+        bottom: 50,
         right: 30,
         zIndex: 9
     }
@@ -85,7 +86,7 @@ export const AdvancedImageList = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [dataSource, setDataSource] = useState([]);
     const [text, setText] = useState("");
-    const newCol = useMemo(() => autoCol(dataSource), [dataSource]);
+    const newCol = useMemo(() => dataSource, [dataSource]);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [touchMoveY, setTouchMoveY] = useState(9999999);
     const [transformY, setTransformY] = useState(0);
@@ -93,6 +94,7 @@ export const AdvancedImageList = () => {
     const [current, setCurrent] = useState(1);
     const [total, setTotal] = useState(0);
     const [paramName, setParamName] = useState(null);
+    const [picPreviewId, setPicPreviewId] = useState(null);
     const handleClickDesc = (event, description) => {
         if (open) return
         setAnchorEl(event.currentTarget);
@@ -103,7 +105,8 @@ export const AdvancedImageList = () => {
     const handleClickAway = (event) => {
         //  setOpen(false);
     }
-    const previewOnOpen = () => {
+    const previewOnOpen = (uuid,item) => {
+        setPicPreviewId(uuid);
         setPreviewOpen(true);
     }
     const previewOnClose = () => {
@@ -169,16 +172,17 @@ export const AdvancedImageList = () => {
         }).then((res = {}) => {
             const _data = res.data?.map?.(it => {
                 return {
+                    ...it,
                     img: it.preview,
                     title: it.name,
                     featured: true,
-                    description: it.description
+                    description: it.description,
                 }
             });
             if (_current === 1) {
-                setDataSource(_data);
+                setDataSource(autoCol(_data));
             } else {
-                setDataSource(dataSource.concat(_data));
+                setDataSource(dataSource.concat(autoCol(_data)));
             }
             setTotal(res.total);
         })
@@ -217,7 +221,7 @@ export const AdvancedImageList = () => {
                             <ImageListItem key={key} cols={item.featured ? 2 : 1} rows={item.featured ? 2 : 1}>
                                 <img src={item.img} alt={item.title}/>
                                 <ImageListItemBar
-                                    title={<div onClick={previewOnOpen}>{item.title}</div>}
+                                    title={<div onClick={()=> previewOnOpen(item.uuid, item)}>{item.title}</div>}
                                     position="top"
                                     actionIcon={
                                         <IconButton aria-label={`star ${item.title}`} className={classes.icon}>
@@ -250,7 +254,7 @@ export const AdvancedImageList = () => {
                     </ImageList>
                 </React.Fragment>}
             {newCol.length < 1 && <div className={classesContainer.container} style={{width: '100%', paddingTop: 100}}><Empty/></div>}
-            <ImagePreview open={previewOpen} onClose={previewOnClose}/>
+            <ImagePreview type={IMAGE_TYPE.PRODUCT} open={previewOpen} uuid={picPreviewId} onClose={previewOnClose}/>
             <Fab className={classes.fab} color="primary" aria-label="add" onClick={toAddItemHandle}>
                 <AddIcon />
             </Fab>

@@ -5,6 +5,7 @@ specifiers:
   '@babel/preset-react': ^7.23.3
   '@material-ui/core': ^4.12.4
   '@material-ui/icons': ^4.11.3
+  '@material-ui/lab': 4.0.0-alpha.61
   ahooks: ^3.7.10
   iscroll-luo: ^1.2.3
   qs: ^6.11.2
@@ -22,6 +23,7 @@ dependencies:
   '@babel/preset-react': 7.23.3
   '@material-ui/core': 4.12.4_biqbaboplfbrettd7655fr4n2y
   '@material-ui/icons': 4.11.3_jvx44q7qymyhf2qyoxemen5jw4
+  '@material-ui/lab': 4.0.0-alpha.61_jvx44q7qymyhf2qyoxemen5jw4
   ahooks: 3.7.10_react@18.2.0
   iscroll-luo: 1.2.3
   qs: 6.11.2
@@ -2986,6 +2988,29 @@ packages:
       '@material-ui/core': 4.12.4_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+    dev: false
+
+  /@material-ui/lab/4.0.0-alpha.61_jvx44q7qymyhf2qyoxemen5jw4:
+    resolution: {integrity: sha512-rSzm+XKiNUjKegj8bzt5+pygZeckNLOr+IjykH8sYdVk7dE9y2ZuUSofiMV2bJk3qU+JHwexmw+q0RyNZB9ugg==}
+    engines: {node: '>=8.0.0'}
+    deprecated: Material UI v4 doesn't receive active development since September 2021. See the guide https://mui.com/material-ui/migration/migration-v4/ to upgrade to v5.
+    peerDependencies:
+      '@material-ui/core': ^4.12.1
+      '@types/react': ^16.8.6 || ^17.0.0
+      react: ^16.8.0 || ^17.0.0
+      react-dom: ^16.8.0 || ^17.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.23.9
+      '@material-ui/core': 4.12.4_biqbaboplfbrettd7655fr4n2y
+      '@material-ui/utils': 4.11.3_biqbaboplfbrettd7655fr4n2y
+      clsx: 1.2.1
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      react-is: 17.0.2
     dev: false
 
   /@material-ui/styles/4.11.5_biqbaboplfbrettd7655fr4n2y:

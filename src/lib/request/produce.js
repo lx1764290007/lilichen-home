@@ -9,3 +9,23 @@ export const fetchProductList = async (data)=>{
         data
     });
 };
+
+export const fetchProductAdd = async (data)=>{
+    return await fetchHandle({
+        url: "product-add",
+        config: {
+            method: "POST"
+        },
+        data
+    });
+};
+
+export const fetchProductPics = async (data)=>{
+    return await fetchHandle({
+        url: "product-pics",
+        config: {
+            method: "GET"
+        },
+        data
+    });
+};
