@@ -19,6 +19,15 @@ export const fetchProductAdd = async (data)=>{
         data
     });
 };
+export const fetchProductUpdate = async (data)=>{
+    return await fetchHandle({
+        url: "product-update",
+        config: {
+            method: "POST"
+        },
+        data
+    });
+};
 
 export const fetchProductPics = async (data)=>{
     return await fetchHandle({

@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     },
     snackbarError: {
         [theme.breakpoints.down('xs')]: {
-            top: 90
+            top: 80
         }
     },
     errorContent: {
@@ -86,9 +86,9 @@ function App() {
     const menuValue_ = useMemo(() => routes.find(it => it.path === location.pathname)?.path, [location]);
     const bottomNavigationBarShow = useMemo(() => routes.find(it => it.path === location.pathname)?.bottomNavigationBarShow, [location]);
     const [messageOpen, setMessageOpen] = useState(false);
-    const [message, setMessage] = useState("UNKNOWN");
+    const [message, setMessage] = useState("UNKNOWN_MESSAGE");
     const [errorMessageOpen, setErrorMessageOpen] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("UNKNOWN");
+    const [errorMessage, setErrorMessage] = useState("UNKNOWN_ERROR_MESSAGE");
     const onRouteChangeHandler = (_, newValue) => {
         // setMenuValue(newValue);
         navigate(newValue);
@@ -100,6 +100,7 @@ function App() {
             setMessageOpen(true);
         });
         vcSubscribePublish.subscribe("onErrorMessage", (args) => {
+            console.log(1)
             setErrorMessageOpen(false);
             setErrorMessage(args[0]);
             setErrorMessageOpen(true);
@@ -164,7 +165,7 @@ function App() {
                 />
                 <Snackbar
                     anchorOrigin={{
-                        vertical: 'center',
+                        vertical: 'top',
                         horizontal: 'center',
                     }}
                     className={classes.snackbarError}

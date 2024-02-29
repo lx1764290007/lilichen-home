@@ -194,7 +194,10 @@ export const AdvancedImageList = () => {
             fetchData(current, args[0]);
         })
         return () => vcSubscribePublish.unsubscribe("product-search");
-    }, [])
+    }, []);
+    const handleToEdit = (event)=> {
+        vcSubscribePublish.public("onNavigate", "/product?params="+window.encodeURIComponent(JSON.stringify(event)));
+    }
     const toAddItemHandle = ()=> {
         vcSubscribePublish.public("onNavigate", "/product-add")
     }
@@ -240,7 +243,7 @@ export const AdvancedImageList = () => {
                                         //     <InfoIcon />
                                         // </IconButton>
                                         <ButtonGroup color="primary" aria-label="outlined primary button group">
-                                            <IconButton className={classes.icon}>
+                                            <IconButton className={classes.icon} onClick={()=> handleToEdit(item)}>
                                                 <EditIcon/>
                                             </IconButton>
                                             {/*<IconButton className={classes.icon} style={{color: "red"}}>*/}

@@ -25,7 +25,17 @@ export const routes = [
         appBar: <AppToolbar left={<Back />} title={"产品添加"} right={<TopRightButton />} />,
         path: "/product-add",
         name: "产品添加",
-        navigation: true,
+        navigation: false,
+        icon: <HomeIcon />,
+        bottomNavigationBarShow: false
+    },
+    {
+        component: <ProductItem param={'update'} />,
+        title: "产品编辑",
+        appBar: <AppToolbar left={<Back />} title={"产品编辑"} right={<TopRightButton />} />,
+        path: "/product",
+        name: "产品编辑",
+        navigation: false,
         icon: <HomeIcon />,
         bottomNavigationBarShow: false
     },
