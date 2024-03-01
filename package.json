@@ -10,6 +10,7 @@
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "4.0.0-alpha.61",
     "ahooks": "^3.7.10",
+    "dayjs": "^1.11.10",
     "iscroll-luo": "^1.2.3",
     "qs": "^6.11.2",
     "react": "^18.2.0",

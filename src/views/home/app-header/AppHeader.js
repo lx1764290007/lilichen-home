@@ -8,7 +8,6 @@ import InputBase from '@material-ui/core/InputBase';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import SearchIcon from '@material-ui/icons/Search';
-import HomeWorkIcon from '@material-ui/icons/HomeWork';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import {AvatarDefault} from "../../../components/Avatar/Avatar";
 import vcSubscribePublish from "vc-subscribe-publish";
@@ -77,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const HomePageAppBar = () => {
+export const HomePageAppBar = (props) => {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -99,14 +98,14 @@ export const HomePageAppBar = () => {
     };
     const onSubmit = (event)=> {
         const value = ref.current.querySelector("input")?.value;
-        vcSubscribePublish.public("product-search", value);
+        vcSubscribePublish.public("appOnSearch", value);
         event.preventDefault();
     }
     const onClearHandler = ()=> {
         const _input = ref.current.querySelector("input");
         if(_input) {
             _input.value = "";
-            vcSubscribePublish.public("product-search", "");
+            vcSubscribePublish.public("appOnSearch", "");
         }
     }
     const menuId = 'primary-search-account-menu';
@@ -156,18 +155,18 @@ export const HomePageAppBar = () => {
         <div className={classes.grow}>
             <AppBar position="static">
                 <Toolbar>
-                    <div className={classes.sectionDesktop}>
+                    <div className={classes.sectionDesktop} style={{marginRight: 5}}>
                         <IconButton
                             edge="start"
                             aria-label="account of current user"
                             aria-haspopup="true"
                             color="inherit"
                         >
-                            <HomeWorkIcon/>
+                            {props.icon}
                         </IconButton>
                     </div>
                     <Typography className={classes.title} variant="h6" noWrap>
-                        基础产品
+                        {props.title}
                     </Typography>
                     <div className={classes.search}>
                         <div className={classes.searchIcon}>

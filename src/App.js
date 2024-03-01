@@ -23,7 +23,8 @@ const useStyles = makeStyles((theme) => ({
     },
     bottomBar: {
         height: 64,
-        backgroundColor: indigo[100]
+        backgroundColor: indigo[100],
+        position: 'relative'
     },
     snackbar: {
         [theme.breakpoints.down('xs')]: {

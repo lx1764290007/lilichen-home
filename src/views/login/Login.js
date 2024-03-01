@@ -11,10 +11,9 @@ import {AvatarDefault} from "../../components/Avatar/Avatar";
 import IconButton from "@material-ui/core/IconButton";
 import LiveHelpIcon from '@material-ui/icons/LiveHelp';
 import {Popover} from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
 
 const IMAGES = [require("../../assets/cat.jpg"), require("../../assets/cat2.jpg"), require("../../assets/dog.jpg"), require("../../assets/dog2.jpg"), require("../../assets/dog3.jpg")];
-
+const RANDOM_NUMBER = Math.floor(Math.random() * IMAGES.length);
 const useStyles = makeStyles((theme) => ({
     root: {
         display: "flex",
@@ -95,7 +94,6 @@ export const Login = () => {
     const [accountErrorText, setAccountErrorText] = useState("");
     const [passwordErrorText, setPasswordErrorText] = useState("");
     useMount(() => {
-        console.log(document.cookie)
         if (document.cookie) {
             vcSubscribePublish.public("onNavigate", "/");
         }
@@ -127,7 +125,7 @@ export const Login = () => {
     }
     return (
         <div className={classes.container}>
-            <img src={IMAGES[0]} alt={"funny"} className={classesRoot.img}/>
+            <img src={IMAGES[RANDOM_NUMBER]} alt={"funny"} className={classesRoot.img}/>
             <form className={classesRoot.root} autoComplete="off" onSubmit={onSubmit}>
                 <TextField error={Boolean(accountErrorText)} ref={accountValue} label="账号"
                            helperText={accountErrorText}

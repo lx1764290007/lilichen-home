@@ -20,6 +20,7 @@ import {fetchProductList} from "../../../lib/request/produce";
 import {IMAGE_TYPE, PAGE_SIZE} from "../../../lib/static";
 import {Empty} from "../../../components/Empty/Empty";
 import AddIcon from '@material-ui/icons/Add';
+import dayjs from "dayjs";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -58,9 +59,17 @@ const useStyles = makeStyles((theme) => ({
         bottom: 50,
         right: 30,
         zIndex: 9
+    },
+    date: {
+        position: "absolute",
+        bottom: 50,
+        color: '#fefefe',
+        zIndex: 1,
+        right: 10,
+        fontSize: 14
     }
 }));
-
+const FORMAT = "YYYY-MM-DD";
 /**
  * The example data is structured as follows:
  *
@@ -137,9 +146,9 @@ export const AdvancedImageList = () => {
             setTransformY(0)
         }
     }
-    const handleLoadMore = () => {
+    const handleLoadMore = async () => {
         if (dataSource.length < total) {
-            fetchData(current + 1, paramName);
+            await fetchData(current + 1, paramName);
             setCurrent(current + 1);
         }
     }
@@ -165,12 +174,12 @@ export const AdvancedImageList = () => {
     );
     const fetchData = async (c, name) => {
         const _current = c || current;
-        fetchProductList({
+        const res = await fetchProductList({
             current: _current,
             size: PAGE_SIZE,
             name
-        }).then((res = {}) => {
-            const _data = res.data?.map?.(it => {
+        });
+        const _data = res.data?.map?.(it => {
                 return {
                     ...it,
                     img: it.preview,
@@ -179,21 +188,23 @@ export const AdvancedImageList = () => {
                     description: it.description,
                 }
             });
-            if (_current === 1) {
+        if (_current === 1) {
                 setDataSource(autoCol(_data));
             } else {
                 setDataSource(dataSource.concat(autoCol(_data)));
             }
-            setTotal(res.total);
-        })
+            setTotal(res?.total);
+        return _data;
     }
+
     useEffect(() => {
         fetchData();
-        vcSubscribePublish.subscribe("product-search", (args) => {
+        vcSubscribePublish.subscribe("appOnSearch", (args) => {
             setParamName(args[0]);
             fetchData(current, args[0]);
         })
-        return () => vcSubscribePublish.unsubscribe("product-search");
+        return () => vcSubscribePublish.unsubscribe("appOnSearch");
+        // eslint-disable-next-line
     }, []);
     const handleToEdit = (event)=> {
         vcSubscribePublish.public("onNavigate", "/product?params="+window.encodeURIComponent(JSON.stringify(event)));
@@ -252,6 +263,7 @@ export const AdvancedImageList = () => {
                                         </ButtonGroup>
                                     }
                                 />
+                                <Typography className={classes.date}>{dayjs(item.updateTime).format(FORMAT)}</Typography>
                             </ImageListItem>
                         ))}
                     </ImageList>

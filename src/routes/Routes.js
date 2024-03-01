@@ -7,12 +7,15 @@ import UserIcon from '@material-ui/icons/AccountBox';
 import SettingIcon from '@material-ui/icons/Settings';
 import RedditIcon from '@material-ui/icons/Reddit';
 import {ProductItem, Back, TopRightButton} from "../views/home/item/Product";
-
+import {Supplier} from "../views/supplier/Supplier";
+import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
+import DeckIcon from '@material-ui/icons/Deck';
+import {SupplierItem} from "../views/supplier/SupplierItem";
 export const routes = [
     {
         component: <HomePage />,
         title: "基础产品",
-        appBar: <HomePageAppBar />,
+        appBar: <HomePageAppBar title={"基础产品"} icon={<DeckIcon />} />,
         path: "/",
         name: "基础产品",
         navigation: true,
@@ -20,35 +23,52 @@ export const routes = [
         bottomNavigationBarShow: true
     },
     {
-        component: <ProductItem param={'add'} />,
+        component: <ProductItem />,
         title: "产品添加",
         appBar: <AppToolbar left={<Back />} title={"产品添加"} right={<TopRightButton />} />,
         path: "/product-add",
         name: "产品添加",
         navigation: false,
-        icon: <HomeIcon />,
         bottomNavigationBarShow: false
     },
     {
-        component: <ProductItem param={'update'} />,
+        component: <ProductItem />,
         title: "产品编辑",
         appBar: <AppToolbar left={<Back />} title={"产品编辑"} right={<TopRightButton />} />,
         path: "/product",
         name: "产品编辑",
         navigation: false,
-        icon: <HomeIcon />,
         bottomNavigationBarShow: false
     },
     {
-        component: <div>page1</div>,
-        title: "page1",
-        path: "/page1",
+        component: <Supplier />,
+        title: "供应商",
+        path: "/supplier",
         name: "供应商",
-        appBar: <AppToolbar />,
+        appBar: <HomePageAppBar title={"供应商"} icon={<ContactPhoneIcon />} />,
         navigation: true,
         icon: <RedditIcon />,
         bottomNavigationBarShow: true
     },
+    {
+        component: <SupplierItem />,
+        title: "供应商编辑",
+        path: "/supplier-update",
+        name: "供应商编辑",
+        appBar: <AppToolbar left={<Back />} title={"供应商编辑"} />,
+        navigation: false,
+        bottomNavigationBarShow: false
+    },
+    {
+        component: <SupplierItem />,
+        title: "供应商添加",
+        path: "/supplier-add",
+        name: "供应商添加",
+        appBar: <AppToolbar left={<Back />} title={"供应商添加"} />,
+        navigation: false,
+        bottomNavigationBarShow: false
+    },
+    //SupplierItem
     {
         component: <div>page2</div>,
         title: "page2",

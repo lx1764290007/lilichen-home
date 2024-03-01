@@ -148,6 +148,7 @@ export const ProductItem = () => {
     const [paths, setPaths] = useSafeState("");
     const [dialogOpen, setDialogOpen] = useSafeState(false);
     const [currentTargetIndex, setCurrentTargetIndex] = useSafeState(-1);
+    // eslint-disable-next-line
     const p = useMemo(() => _data, [paths, currentTargetIndex]);
     const location = useLocation();
     const editData = useMemo(() => {
@@ -160,6 +161,7 @@ export const ProductItem = () => {
             uploadHandle(args[0]).catch(e => console.log(e))
         });
         return () => vcSubscribePublish.unsubscribe("product-upload")
+        // eslint-disable-next-line
     }, []);
     useEffect(() => {
         if (editData) {
@@ -188,6 +190,7 @@ export const ProductItem = () => {
             })
         }
         return ()=> _data = []
+        // eslint-disable-next-line
     }, [editData])
     const onDialogClose = () => {
         setDialogOpen(false);

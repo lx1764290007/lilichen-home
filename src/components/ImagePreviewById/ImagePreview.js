@@ -92,9 +92,11 @@ export const ImagePreview = (props)=> {
         return ()=> {
           setPreviewIndex(1);
         }
+        // eslint-disable-next-line
     }, [props.uuid]);
     useEffect(()=>{
         props.open && setPreviewIndex(1);
+        // eslint-disable-next-line
     }, [props.open])
     const onChange = (_, n)=> {
         setPreviewIndex(n);
