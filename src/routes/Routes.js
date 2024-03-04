@@ -3,7 +3,6 @@ import {HomePage} from "../views/home/Home";
 import {AppToolbar} from "../components/AppBar/Toobar";
 import {Login, LoginAppBarLeft, LoginAppBarRight} from "../views/login/Login";
 import HomeIcon from '@material-ui/icons/HomeWork';
-import UserIcon from '@material-ui/icons/AccountBox';
 import SettingIcon from '@material-ui/icons/Settings';
 import RedditIcon from '@material-ui/icons/Reddit';
 import {ProductItem, Back, TopRightButton} from "../views/home/item/Product";
@@ -11,6 +10,9 @@ import {Supplier} from "../views/supplier/Supplier";
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import DeckIcon from '@material-ui/icons/Deck';
 import {SupplierItem} from "../views/supplier/SupplierItem";
+import {GoodsItem, GoodsItemTopRightButton} from "../views/goods/GoodsItem";
+import {AdvancedGoodsList} from "../views/goods/GoodsList";
+import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
 export const routes = [
     {
         component: <HomePage />,
@@ -70,15 +72,34 @@ export const routes = [
     },
     //SupplierItem
     {
-        component: <div>page2</div>,
-        title: "page2",
-        path: "/page2",
-        name: "用户",
-        appBar: <AppToolbar />,
-        navigation: true,
-        bottomNavigationBarShow: true,
-        icon: <UserIcon />
+        component: <GoodsItem />,
+        title: "进阶产品添加",
+        appBar: <AppToolbar left={<Back />} title={"进阶产品添加"} right={<GoodsItemTopRightButton />} />,
+        path: "/goods-add",
+        name: "进阶产品添加",
+        navigation: false,
+        bottomNavigationBarShow: false
     },
+    {
+        component: <GoodsItem />,
+        title: "进阶产品编辑",
+        appBar: <AppToolbar left={<Back />} title={"进阶产品编辑"} />,
+        path: "/goods-update",
+        name: "进阶产品编辑",
+        navigation: false,
+        bottomNavigationBarShow: false
+    },
+    {
+        component: <AdvancedGoodsList />,
+        title: "进阶产品",
+        appBar: <HomePageAppBar title={"进阶产品列表"} icon={<DeckIcon />} />,
+        path: "/goods-list",
+        name: "进阶产品",
+        icon: <LibraryBooksIcon />,
+        navigation: true,
+        bottomNavigationBarShow: true
+    },
+
     {
         component: <Login />,
         title: "login",

@@ -10,6 +10,16 @@ export const fetchUploadProduct = async (data)=>{
         data
     });
 };
+export const fetchUploadGoods = async (data)=>{
+    return await fetchHandle({
+        url: "upload-goods",
+        config: {
+            method: "FILE",
+            // headers: {'Content-Type': 'multipart/form-data;'}
+        },
+        data
+    });
+};
 export const fetchFileRemove = async (data)=>{
     return await fetchHandle({
         url: "file-remove",

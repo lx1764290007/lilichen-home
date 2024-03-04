@@ -1,30 +1,33 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
-import ImageList from '@material-ui/core/ImageList';
-import ImageListItem from '@material-ui/core/ImageListItem';
-import ImageListItemBar from '@material-ui/core/ImageListItemBar';
-import IconButton from '@material-ui/core/IconButton';
-import EditIcon from '@material-ui/icons/Edit';
-import StarBorderIcon from '@material-ui/icons/StarBorder';
-import {autoCol, BONUS} from "../../../tools/tools";
-import {ButtonGroup, ClickAwayListener, Fab, Fade, Paper, Popper} from "@material-ui/core";
+import {autoCol, BONUS} from "../../tools/tools";
+import {
+    ButtonGroup,
+    ClickAwayListener,
+    Fab,
+    Fade,
+    Paper,
+    Popper
+} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography"
 import {red} from "@material-ui/core/colors";
-import {ImagePreview} from "../../../components/ImagePreviewById/ImagePreview";
+import {ImagePreview} from "../../components/ImagePreviewById/ImagePreview";
 // import Style from "./ImageList.module.css";
 import {useDebounceFn} from "ahooks";
-import {Loading} from "../../../components/Loading/Loading";
-import {useContainerStyle} from "../../../App";
+import {Loading} from "../../components/Loading/Loading";
+import {useContainerStyle} from "../../App";
 import vcSubscribePublish from "vc-subscribe-publish";
-import {fetchProductList, fetchProductRemove} from "../../../lib/request/produce";
-import {IMAGE_TYPE, PAGE_SIZE} from "../../../lib/static";
-import {Empty} from "../../../components/Empty/Empty";
+import {fetchGoodsList, fetchGoodsRemove} from "../../lib/request/goods";
+import {IMAGE_TYPE, PAGE_SIZE} from "../../lib/static";
+import {Empty} from "../../components/Empty/Empty";
 import AddIcon from '@material-ui/icons/Add';
-import dayjs from "dayjs";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutlined";
 import Modal from "@material-ui/core/Modal";
 import Button from "@material-ui/core/Button";
-
+import {AdvancedGoodsListItem} from "./GoodListItem";
+import EditIcon from "@material-ui/icons/Edit";
+import {DeleteOutlineSharp} from "@material-ui/icons";
+import {fetchSupplierList} from "../../lib/request/supplier";
+import {fetchProductList} from "../../lib/request/produce";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -38,12 +41,13 @@ const useStyles = makeStyles((theme) => ({
     typography: {
         padding: theme.spacing(2),
     },
-    imageList: {
+    list: {
         // width: 500,
         // Promote the list into its own layer in Chrome. This cost memory, but helps keep FPS high.
         transform: 'translateZ(0)',
         cursor: 'pointer',
-        width: '100%'
+        width: '100%',
+        overflowY: 'auto'
     },
     closeIcon: {
         color: red[200],
@@ -66,8 +70,9 @@ const useStyles = makeStyles((theme) => ({
     },
     paper: {
         backgroundColor: theme.palette.background.paper,
-        border: '2px solid #000',
+        border: '1px solid #a79adc',
         boxShadow: theme.shadows[5],
+        width: '80%',
         padding: theme.spacing(3, 3, 3),
     },
     fab: {
@@ -117,32 +122,36 @@ const FORMAT = "YYYY-MM-DD";
  *   },
  * ];
  */
-export const AdvancedImageList = () => {
+export const AdvancedGoodsList = () => {
     const classes = useStyles();
     const classesContainer = useContainerStyle();
     const [open, setOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [dataSource, setDataSource] = useState([]);
-    const [text, setText] = useState("");
-    const newCol = useMemo(() => dataSource, [dataSource]);
+
     const [previewOpen, setPreviewOpen] = useState(false);
     const [touchMoveY, setTouchMoveY] = useState(9999999);
     const [transformY, setTransformY] = useState(0);
     const scrollRef = useRef(null);
     const [current, setCurrent] = useState(1);
     const [total, setTotal] = useState(0);
+    const [target, setTarget] = useState(null);
     const [paramName, setParamName] = useState(null);
     const [picPreviewId, setPicPreviewId] = useState(null);
     const [modalOpen, setModalOpen] = useState(0);
-    const handleClickDesc = (event, description) => {
-        if (open) return
-        setAnchorEl(event.currentTarget);
-        setText(description);
-        setOpen(true);
-        setTimeout(() => setOpen(false), 3000);
-    };
+    const [productList, setProductList] = useState([]);
+    const [supplierList, setSupplierList] = useState([]);
+    const newCol = useMemo(() => dataSource.map(it=>{
+        return {
+            ...it,
+            _productName: productList.find(its=> its.id === it.product)?.name,
+            _supplierName: supplierList.find(its=> its.id === it.company)?.name
+        }
+    }), [dataSource, productList, supplierList]);
     const handleClickAway = (event) => {
-        //  setOpen(false);
+        setOpen(false);
+        setAnchorEl(null);
+        setTarget(null);
     }
     const previewOnOpen = (uuid, item) => {
         setPicPreviewId(uuid);
@@ -204,7 +213,7 @@ export const AdvancedImageList = () => {
     );
     const fetchData = async (c, name) => {
         const _current = c || current;
-        const res = await fetchProductList({
+        const res = await fetchGoodsList({
             current: _current,
             size: PAGE_SIZE,
             name
@@ -228,7 +237,13 @@ export const AdvancedImageList = () => {
     }
 
     useEffect(() => {
-        fetchData();
+        fetchData().then(()=> fetchSupplierList({
+            current: 1,
+            size: 9999
+        }).then(res=> setSupplierList(res?.data))).finally(()=> fetchProductList({
+            current: 1,
+            size: 9999
+        }).then(res=> setProductList(res?.data)));
         vcSubscribePublish.subscribe("appOnSearch", (args) => {
             setParamName(args[0]);
             fetchData(current, args[0]);
@@ -237,10 +252,10 @@ export const AdvancedImageList = () => {
         // eslint-disable-next-line
     }, []);
     const handleToEdit = (event) => {
-        vcSubscribePublish.public("onNavigate", "/product?params=" + window.encodeURIComponent(JSON.stringify(event)));
+        vcSubscribePublish.public("onNavigate", "/goods-update?params=" + window.encodeURIComponent(JSON.stringify(event)));
     }
     const toAddItemHandle = () => {
-        vcSubscribePublish.public("onNavigate", "/product-add")
+        vcSubscribePublish.public("onNavigate", "/goods-add")
     }
     const onHandleRemove = (event) => {
         setModalOpen(event);
@@ -250,76 +265,50 @@ export const AdvancedImageList = () => {
     }
     const handleConfirmRemove = async () => {
         if (modalOpen) {
-            await fetchProductRemove({
+            await fetchGoodsRemove({
                 id: modalOpen
             })
             setDataSource(dataSource.filter(it => it.id !== modalOpen));
             handleModalClose();
         }
     }
+    const onMoreActionClick = (event, t)=> {
+        if (open) return
+        setAnchorEl(event.currentTarget);
+        setTarget(t);
+        setOpen(t?.id);
+    }
     return (
         <div className={classes.root}>
+            <Popper open={open} anchorEl={anchorEl} placement={"left-end"} transition>
+                {({TransitionProps}) => (
+                    <Fade {...TransitionProps} timeout={100}>
+                        <ClickAwayListener onClickAway={handleClickAway}><Paper>
+                            {/*<CloseIcon className={classes.closeIcon} />*/}
+                            <ButtonGroup variant={"text"} orientation="vertical">
+                                <Button color={"primary"} startIcon={<EditIcon/>} onClick={()=> handleToEdit(target)}>编辑</Button>
+                                <Button color={"secondary"} startIcon={<DeleteOutlineSharp/> } onClick={()=> onHandleRemove(target?.id)}>删除</Button>
+                            </ButtonGroup>
+                        </Paper></ClickAwayListener>
+                    </Fade>
+                )}
+            </Popper>
             {newCol.length > 0 &&
-                <React.Fragment><Popper open={open} anchorEl={anchorEl} placement={"top-start"} transition>
-                    {({TransitionProps}) => (
-                        <Fade {...TransitionProps} timeout={100}>
-                            <ClickAwayListener onClickAway={handleClickAway}><Paper>
-                                {/*<CloseIcon className={classes.closeIcon} />*/}
-                                <Typography className={classes.typography}>{text}</Typography>
-                            </Paper></ClickAwayListener>
-                        </Fade>
-                    )}
-                </Popper>
+                <React.Fragment>
                     {transformY >= BONUS / 2 &&
                         <div style={{position: "absolute", padding: 5, width: "100%"}}><Loading/></div>}
-                    <ImageList ref={scrollRef} rowHeight={230} gap={1}
+                    <div ref={scrollRef}
                                style={{transform: `translateY(${transformY}px)`}}
-                               className={`${classes.imageList} ${classesContainer.container}`}
+                               className={`${classes.list} ${classesContainer.container}`}
                                onTouchEnd={onTouchendHandler} onTouchMove={onTouchmoveHandler} onScroll={run}>
                         {newCol.map((item, key) => (
-                            <ImageListItem key={key} cols={item.featured ? 2 : 1} rows={item.featured ? 2 : 1}>
-                                <IconButton className={classes.deleteIcon} onClick={() => onHandleRemove(item.id)}>
-                                    <DeleteOutlineIcon/>
-                                </IconButton>
-                                <img src={item.img} alt={item.title}/>
-                                <ImageListItemBar
-                                    title={<div onClick={() => previewOnOpen(item.uuid, item)}>{item.title}</div>}
-                                    position="top"
-                                    actionIcon={
-                                        <IconButton aria-label={`star ${item.title}`} className={classes.icon}>
-                                            <StarBorderIcon/>
-                                        </IconButton>
-                                    }
-                                    actionPosition="left"
-                                    className={classes.titleBar}
-                                />
-                                <ImageListItemBar
-                                    title={<div
-                                        onClick={(event) => handleClickDesc(event, item.description)}>{item.description}</div>}
-                                    // subtitle={<span>by: {item.description}</span>}
-                                    actionIcon={
-                                        // <IconButton aria-label={`info about ${item.title}`} className={classes.icon}>
-                                        //     <InfoIcon />
-                                        // </IconButton>
-                                        <ButtonGroup color="primary" aria-label="outlined primary button group">
-                                            <IconButton className={classes.icon} onClick={() => handleToEdit(item)}>
-                                                <EditIcon/>
-                                            </IconButton>
-                                            {/*<IconButton className={classes.icon} style={{color: "red"}}>*/}
-                                            {/*    <DeleteIcon />*/}
-                                            {/*</IconButton>*/}
-                                        </ButtonGroup>
-                                    }
-                                />
-                                <Typography
-                                    className={classes.date}>{dayjs(item.updateTime).format(FORMAT)}</Typography>
-                            </ImageListItem>
+                            <AdvancedGoodsListItem dataSource={item} onMoreActionClick={onMoreActionClick} />
                         ))}
-                    </ImageList>
+                    </div>
                 </React.Fragment>}
             {newCol.length < 1 &&
                 <div className={classesContainer.container} style={{width: '100%', paddingTop: 100}}><Empty/></div>}
-            <ImagePreview type={IMAGE_TYPE.PRODUCT} open={previewOpen} uuid={picPreviewId} onClose={previewOnClose}/>
+            <ImagePreview type={IMAGE_TYPE.GOODS} open={previewOpen} uuid={picPreviewId} onClose={previewOnClose}/>
             <Fab className={classes.fab} color="primary" aria-label="add" onClick={toAddItemHandle}>
                 <AddIcon/>
             </Fab>
@@ -332,11 +321,11 @@ export const AdvancedImageList = () => {
                 aria-describedby="simple-modal-description"
             >
                 <Paper className={classes.paper}>
-                    <Typography component={"h5"}>注意：删除此内容也将删除所有与之关联的产品！！</Typography>
-                        <div className={classes.buttons}>
+                    <Typography component={"h5"}>注意：删除二次确认!!</Typography>
+                    <div className={classes.buttons}>
                         <Button variant={"text"} onClick={handleConfirmRemove} color={"primary"}>确定</Button>
                         <Button variant={"text"} onClick={handleModalClose} color={"secondary"}>再想想</Button>
-                        </div>
+                    </div>
                 </Paper>
             </Modal>
         </div>

@@ -30,7 +30,13 @@ const useStyles = makeStyles((theme) => ({
     },
     img: {
         width: '100%',
-        maxWidth: '100%'
+        maxWidth: '100%',
+        minHeight: 80,
+        backgroundColor: '#fff',
+        color: '#333',
+        textAlign : 'center',
+        margin: '0 auto',
+        display: 'block'
     },
     pagination: {
         backgroundColor: 'rgba(255,255,255,0.3)',
