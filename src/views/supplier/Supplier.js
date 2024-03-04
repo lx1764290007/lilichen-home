@@ -24,7 +24,7 @@ import {useDebounceFn} from "ahooks";
 import {Loading} from "../../components/Loading/Loading";
 import {useContainerStyle} from "../../App";
 import vcSubscribePublish from "vc-subscribe-publish";
-import {fetchSupplierList} from "../../lib/request/supplier";
+import {fetchSupplierList, fetchSupplierRemove} from "../../lib/request/supplier";
 import {PAGE_SIZE} from "../../lib/static";
 import {Empty} from "../../components/Empty/Empty";
 import AddIcon from '@material-ui/icons/Add';
@@ -235,6 +235,16 @@ export const Supplier = () => {
     const toAddItemHandle = () => {
         vcSubscribePublish.public("onNavigate", "/supplier-add")
     }
+    const handleOnRemove = async ()=> {
+        await fetchSupplierRemove({
+            id: target.id
+        });
+        const newData = dataSource.filter(k=> k.id !==target.id);
+        setDataSource(newData);
+        setOpen(false);
+        setAnchorEl(null);
+        setTarget(null);
+    }
     return (
         <div className={classes.supplierRoot}>
             {newCol.length > 0 &&
@@ -245,7 +255,7 @@ export const Supplier = () => {
                                 {/*<CloseIcon className={classes.closeIcon} />*/}
                                 <ButtonGroup variant={"text"} orientation="vertical">
                                     <Button color={"primary"} startIcon={<EditIcon/>} onClick={()=> handleToEdit(target)}>编辑</Button>
-                                    <Button color={"secondary"} startIcon={<DeleteOutlineSharp/>}>删除</Button>
+                                    <Button color={"secondary"} startIcon={<DeleteOutlineSharp/> } onClick={handleOnRemove}>删除</Button>
                                 </ButtonGroup>
                             </Paper></ClickAwayListener>
                         </Fade>

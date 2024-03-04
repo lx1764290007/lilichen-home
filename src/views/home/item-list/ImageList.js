@@ -16,11 +16,14 @@ import {useDebounceFn} from "ahooks";
 import {Loading} from "../../../components/Loading/Loading";
 import {useContainerStyle} from "../../../App";
 import vcSubscribePublish from "vc-subscribe-publish";
-import {fetchProductList} from "../../../lib/request/produce";
+import {fetchProductList, fetchProductRemove} from "../../../lib/request/produce";
 import {IMAGE_TYPE, PAGE_SIZE} from "../../../lib/static";
 import {Empty} from "../../../components/Empty/Empty";
 import AddIcon from '@material-ui/icons/Add';
 import dayjs from "dayjs";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutlined";
+import Modal from "@material-ui/core/Modal";
+import Button from "@material-ui/core/Button";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -54,6 +57,18 @@ const useStyles = makeStyles((theme) => ({
     icon: {
         color: 'white',
     },
+    modal: {
+        display: 'flex',
+        padding: theme.spacing(1),
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    paper: {
+        backgroundColor: theme.palette.background.paper,
+        border: '2px solid #000',
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing(3, 3, 3),
+    },
     fab: {
         position: 'absolute',
         bottom: 50,
@@ -67,7 +82,20 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 1,
         right: 10,
         fontSize: 14
-    }
+    },
+    deleteIcon: {
+        position: "absolute",
+        right: 5,
+        top: 0,
+        zIndex: 10,
+        color: '#dc5c58',
+        fontWeight: 600
+    },
+    buttons: {
+        position: 'relative',
+        textAlign: 'right',
+        marginTop: theme.spacing(2)
+    },
 }));
 const FORMAT = "YYYY-MM-DD";
 /**
@@ -104,6 +132,7 @@ export const AdvancedImageList = () => {
     const [total, setTotal] = useState(0);
     const [paramName, setParamName] = useState(null);
     const [picPreviewId, setPicPreviewId] = useState(null);
+    const [modalOpen, setModalOpen] = useState(0);
     const handleClickDesc = (event, description) => {
         if (open) return
         setAnchorEl(event.currentTarget);
@@ -114,7 +143,7 @@ export const AdvancedImageList = () => {
     const handleClickAway = (event) => {
         //  setOpen(false);
     }
-    const previewOnOpen = (uuid,item) => {
+    const previewOnOpen = (uuid, item) => {
         setPicPreviewId(uuid);
         setPreviewOpen(true);
     }
@@ -180,20 +209,20 @@ export const AdvancedImageList = () => {
             name
         });
         const _data = res.data?.map?.(it => {
-                return {
-                    ...it,
-                    img: it.preview,
-                    title: it.name,
-                    featured: true,
-                    description: it.description,
-                }
-            });
-        if (_current === 1) {
-                setDataSource(autoCol(_data));
-            } else {
-                setDataSource(dataSource.concat(autoCol(_data)));
+            return {
+                ...it,
+                img: it.preview,
+                title: it.name,
+                featured: true,
+                description: it.description,
             }
-            setTotal(res?.total);
+        });
+        if (_current === 1) {
+            setDataSource(autoCol(_data));
+        } else {
+            setDataSource(dataSource.concat(autoCol(_data)));
+        }
+        setTotal(res?.total);
         return _data;
     }
 
@@ -206,11 +235,26 @@ export const AdvancedImageList = () => {
         return () => vcSubscribePublish.unsubscribe("appOnSearch");
         // eslint-disable-next-line
     }, []);
-    const handleToEdit = (event)=> {
-        vcSubscribePublish.public("onNavigate", "/product?params="+window.encodeURIComponent(JSON.stringify(event)));
+    const handleToEdit = (event) => {
+        vcSubscribePublish.public("onNavigate", "/product?params=" + window.encodeURIComponent(JSON.stringify(event)));
     }
-    const toAddItemHandle = ()=> {
+    const toAddItemHandle = () => {
         vcSubscribePublish.public("onNavigate", "/product-add")
+    }
+    const onHandleRemove = (event) => {
+        setModalOpen(event);
+    }
+    const handleModalClose = () => {
+        setModalOpen(0);
+    }
+    const handleConfirmRemove = async () => {
+        if (modalOpen) {
+            await fetchProductRemove({
+                id: modalOpen
+            })
+            setDataSource(dataSource.filter(it => it.id !== modalOpen));
+            handleModalClose();
+        }
     }
     return (
         <div className={classes.root}>
@@ -233,9 +277,12 @@ export const AdvancedImageList = () => {
                                onTouchEnd={onTouchendHandler} onTouchMove={onTouchmoveHandler} onScroll={run}>
                         {newCol.map((item, key) => (
                             <ImageListItem key={key} cols={item.featured ? 2 : 1} rows={item.featured ? 2 : 1}>
+                                <IconButton className={classes.deleteIcon} onClick={() => onHandleRemove(item.id)}>
+                                    <DeleteOutlineIcon/>
+                                </IconButton>
                                 <img src={item.img} alt={item.title}/>
                                 <ImageListItemBar
-                                    title={<div onClick={()=> previewOnOpen(item.uuid, item)}>{item.title}</div>}
+                                    title={<div onClick={() => previewOnOpen(item.uuid, item)}>{item.title}</div>}
                                     position="top"
                                     actionIcon={
                                         <IconButton aria-label={`star ${item.title}`} className={classes.icon}>
@@ -254,7 +301,7 @@ export const AdvancedImageList = () => {
                                         //     <InfoIcon />
                                         // </IconButton>
                                         <ButtonGroup color="primary" aria-label="outlined primary button group">
-                                            <IconButton className={classes.icon} onClick={()=> handleToEdit(item)}>
+                                            <IconButton className={classes.icon} onClick={() => handleToEdit(item)}>
                                                 <EditIcon/>
                                             </IconButton>
                                             {/*<IconButton className={classes.icon} style={{color: "red"}}>*/}
@@ -263,16 +310,34 @@ export const AdvancedImageList = () => {
                                         </ButtonGroup>
                                     }
                                 />
-                                <Typography className={classes.date}>{dayjs(item.updateTime).format(FORMAT)}</Typography>
+                                <Typography
+                                    className={classes.date}>{dayjs(item.updateTime).format(FORMAT)}</Typography>
                             </ImageListItem>
                         ))}
                     </ImageList>
                 </React.Fragment>}
-            {newCol.length < 1 && <div className={classesContainer.container} style={{width: '100%', paddingTop: 100}}><Empty/></div>}
+            {newCol.length < 1 &&
+                <div className={classesContainer.container} style={{width: '100%', paddingTop: 100}}><Empty/></div>}
             <ImagePreview type={IMAGE_TYPE.PRODUCT} open={previewOpen} uuid={picPreviewId} onClose={previewOnClose}/>
             <Fab className={classes.fab} color="primary" aria-label="add" onClick={toAddItemHandle}>
-                <AddIcon />
+                <AddIcon/>
             </Fab>
+            <Modal
+                disableEnforceFocus
+                open={Boolean(modalOpen)}
+                className={classes.modal}
+                onClose={handleModalClose}
+                aria-labelledby="simple-modal-title"
+                aria-describedby="simple-modal-description"
+            >
+                <Paper className={classes.paper}>
+                    <Typography component={"h5"}>注意：删除此内容也将删除所有与之关联的产品！！</Typography>
+                        <div className={classes.buttons}>
+                        <Button variant={"text"} onClick={handleConfirmRemove} color={"primary"}>确定</Button>
+                        <Button variant={"text"} onClick={handleModalClose} color={"secondary"}>再想想</Button>
+                        </div>
+                </Paper>
+            </Modal>
         </div>
     );
 }

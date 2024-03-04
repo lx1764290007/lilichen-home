@@ -19,6 +19,15 @@ export const fetchSupplierAdd = async (data)=>{
         data
     });
 };
+export const fetchSupplierRemove = async (data)=>{
+    return await fetchHandle({
+        url: "company-remove",
+        config: {
+            method: "POST"
+        },
+        data
+    });
+};
 export const fetchSupplierUpdate = async (data)=>{
     return await fetchHandle({
         url: "company-update",

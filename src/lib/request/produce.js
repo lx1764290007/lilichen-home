@@ -28,7 +28,15 @@ export const fetchProductUpdate = async (data)=>{
         data
     });
 };
-
+export const fetchProductRemove = async (data)=>{
+    return await fetchHandle({
+        url: "product-remove",
+        config: {
+            method: "POST"
+        },
+        data
+    });
+};
 export const fetchProductPics = async (data)=>{
     return await fetchHandle({
         url: "product-pics",

@@ -11,6 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 
+
 const useStyles = makeStyles((theme) => ({
     modal: {
         display: 'flex',
@@ -36,7 +37,8 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         left: 0,
         right: 0,
-        position: 'absolute',
+        position: 'fixed',
+        zIndex: 10,
         bottom: 0,
         display: 'flex',
         justifyContent: 'space-around',
