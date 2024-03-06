@@ -22,7 +22,7 @@ import Typography from "@material-ui/core/Typography"
 import {red} from "@material-ui/core/colors";
 import {useDebounceFn} from "ahooks";
 import {Loading} from "../../components/Loading/Loading";
-import {useContainerStyle} from "../../App";
+import {Context} from "../../App";
 import vcSubscribePublish from "vc-subscribe-publish";
 import {fetchSupplierList, fetchSupplierRemove} from "../../lib/request/supplier";
 import {PAGE_SIZE} from "../../lib/static";
@@ -32,6 +32,8 @@ import RoomIcon from '@material-ui/icons/Room';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Button from "@material-ui/core/Button";
 import {DeleteOutlineSharp} from "@material-ui/icons";
+import Modal from "@material-ui/core/Modal";
+
 
 const useStyles = makeStyles((theme) => ({
     supplierRoot: {
@@ -111,6 +113,23 @@ const useStyles = makeStyles((theme) => ({
         marginRight: 3,
         fontWeight: 600,
         transform: 'translateY(3px)'
+    },
+    modal: {
+        display: 'flex',
+        padding: theme.spacing(1),
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    paper: {
+        backgroundColor: theme.palette.background.paper,
+        border: '2px solid #000',
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing(3, 3, 3),
+    },
+    buttons: {
+        position: 'relative',
+        textAlign: 'right',
+        marginTop: theme.spacing(2)
     }
 }));
 
@@ -134,7 +153,7 @@ const useStyles = makeStyles((theme) => ({
  */
 export const Supplier = () => {
     const classes = useStyles();
-    const classesContainer = useContainerStyle();
+    const mc = React.useContext(Context);
     const [open, setOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [dataSource, setDataSource] = useState([]);
@@ -146,6 +165,7 @@ export const Supplier = () => {
     const [current, setCurrent] = useState(1);
     const [total, setTotal] = useState(0);
     const [paramName, setParamName] = useState(null);
+    const [modalOpen, setModalOpen] = useState(0);
     const handleClickMoreAction = (event, t) => {
         if (open) return
         setAnchorEl(event.currentTarget);
@@ -224,7 +244,6 @@ export const Supplier = () => {
         fetchData().then(()=> void 0);
         vcSubscribePublish.subscribe("appOnSearch", (args) => {
             setParamName(args[0]);
-            console.log(args)
         })
         return () => vcSubscribePublish.unsubscribe("appOnSearch");
         // eslint-disable-next-line
@@ -245,6 +264,21 @@ export const Supplier = () => {
         setAnchorEl(null);
         setTarget(null);
     }
+    const onHandleRemove = (event) => {
+        setModalOpen(event);
+    }
+    const handleModalClose = () => {
+        setModalOpen(0);
+    }
+    const handleConfirmRemove = async () => {
+        if (modalOpen) {
+            handleModalClose();
+            handleOnRemove();
+        }
+    }
+    const toGoodsSearchHandle = async(id) => {
+        vcSubscribePublish.public("onNavigate", "/search-goods-list?supplierId="+id);
+    }
     return (
         <div className={classes.supplierRoot}>
             {newCol.length > 0 &&
@@ -255,7 +289,7 @@ export const Supplier = () => {
                                 {/*<CloseIcon className={classes.closeIcon} />*/}
                                 <ButtonGroup variant={"text"} orientation="vertical">
                                     <Button color={"primary"} startIcon={<EditIcon/>} onClick={()=> handleToEdit(target)}>编辑</Button>
-                                    <Button color={"secondary"} startIcon={<DeleteOutlineSharp/> } onClick={handleOnRemove}>删除</Button>
+                                    <Button color={"secondary"} startIcon={<DeleteOutlineSharp/> } onClick={onHandleRemove}>删除</Button>
                                 </ButtonGroup>
                             </Paper></ClickAwayListener>
                         </Fade>
@@ -265,9 +299,9 @@ export const Supplier = () => {
                         <div style={{position: "absolute", padding: 5, width: "100%",boxSizing:'border-box'}}><Loading/></div>}
                     <div ref={scrollRef}
                          style={{transform: `translateY(${transformY}px)`}}
-                         className={`${classes.list} ${classesContainer.container}`}
+                         className={`${classes.list} ${mc.mStyle}`}
                          onTouchEnd={onTouchendHandler} onTouchMove={onTouchmoveHandler} onScroll={run}>
-                        {newCol.map(item => <Card key={item.id} className={classes.card}>
+                        {newCol.map(item => <Card key={item.id} className={classes.card} onClick={()=> toGoodsSearchHandle(item.id)}>
                             <CardHeader
                                 avatar={
                                     <Avatar aria-label="recipe" className={classes.avatar}>
@@ -299,11 +333,27 @@ export const Supplier = () => {
                     </div>
 
                 </React.Fragment>}
-            {newCol.length < 1 && <div className={classesContainer.container}
+            {newCol.length < 1 && <div className={mc.mStyle}
                                        style={{width: '100%', paddingTop: 100, boxSizing: 'border-box'}}><Empty/></div>}
             <Fab className={classes.fab} color="primary" aria-label="add" onClick={toAddItemHandle}>
                 <AddIcon/>
             </Fab>
+            <Modal
+                disableEnforceFocus
+                open={Boolean(modalOpen)}
+                className={classes.modal}
+                onClose={handleModalClose}
+                aria-labelledby="simple-modal-title"
+                aria-describedby="simple-modal-description"
+            >
+                <Paper className={classes.paper}>
+                    <Typography component={"h5"}>注意：删除此内容也将删除所有与之关联的产品！！</Typography>
+                    <div className={classes.buttons}>
+                        <Button variant={"text"} onClick={handleConfirmRemove} color={"primary"}>确定</Button>
+                        <Button variant={"text"} onClick={handleModalClose} color={"secondary"}>再想想</Button>
+                    </div>
+                </Paper>
+            </Modal>
         </div>
     );
 }

@@ -1,4 +1,4 @@
-import {HomePageAppBar} from "../views/home/app-header/AppHeader";
+import {HomePageAppBar} from "../components/AppHeader/AppHeader";
 import {HomePage} from "../views/home/Home";
 import {AppToolbar} from "../components/AppBar/Toobar";
 import {Login, LoginAppBarLeft, LoginAppBarRight} from "../views/login/Login";
@@ -7,12 +7,13 @@ import SettingIcon from '@material-ui/icons/Settings';
 import RedditIcon from '@material-ui/icons/Reddit';
 import {ProductItem, Back, TopRightButton} from "../views/home/item/Product";
 import {Supplier} from "../views/supplier/Supplier";
-import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import DeckIcon from '@material-ui/icons/Deck';
 import {SupplierItem} from "../views/supplier/SupplierItem";
 import {GoodsItem, GoodsItemTopRightButton} from "../views/goods/GoodsItem";
-import {AdvancedGoodsList} from "../views/goods/GoodsList";
+import {AdvancedGoodsList, SEARCH_PLACEHOLDER} from "../views/goods/GoodsList";
 import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
+import BookmarksIcon from '@material-ui/icons/Bookmarks';
+import OfflineBoltIcon from '@material-ui/icons/OfflineBolt';
 export const routes = [
     {
         component: <HomePage />,
@@ -47,7 +48,7 @@ export const routes = [
         title: "供应商",
         path: "/supplier",
         name: "供应商",
-        appBar: <HomePageAppBar title={"供应商"} icon={<ContactPhoneIcon />} />,
+        appBar: <HomePageAppBar title={"供应商"} icon={<OfflineBoltIcon />} />,
         navigation: true,
         icon: <RedditIcon />,
         bottomNavigationBarShow: true
@@ -83,7 +84,7 @@ export const routes = [
     {
         component: <GoodsItem />,
         title: "进阶产品编辑",
-        appBar: <AppToolbar left={<Back />} title={"进阶产品编辑"} />,
+        appBar: <AppToolbar left={<Back />} title={"进阶产品编辑"} right={<GoodsItemTopRightButton />} />,
         path: "/goods-update",
         name: "进阶产品编辑",
         navigation: false,
@@ -92,14 +93,23 @@ export const routes = [
     {
         component: <AdvancedGoodsList />,
         title: "进阶产品",
-        appBar: <HomePageAppBar title={"进阶产品列表"} icon={<DeckIcon />} />,
+        appBar: <HomePageAppBar placeholder={SEARCH_PLACEHOLDER} title={"进阶产品列表"} icon={<BookmarksIcon />} />,
         path: "/goods-list",
         name: "进阶产品",
         icon: <LibraryBooksIcon />,
         navigation: true,
         bottomNavigationBarShow: true
     },
-
+    {
+        component: <AdvancedGoodsList />,
+        title: "进阶产品搜索结果",
+        appBar: <AppToolbar left={<Back />} title={"搜索结果"} />,
+        path: "/search-goods-list",
+        name: "进阶产品",
+        icon: <LibraryBooksIcon />,
+        navigation: false,
+        bottomNavigationBarShow: false
+    },
     {
         component: <Login />,
         title: "login",

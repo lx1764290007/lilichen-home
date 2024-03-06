@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
@@ -10,6 +10,7 @@ import {Pagination} from "@material-ui/lab";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
+import {fetchGoodsPics} from "../../lib/request/goods";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
         minHeight: 80,
         backgroundColor: '#fff',
         color: '#333',
-        textAlign : 'center',
+        textAlign: 'center',
         margin: '0 auto',
         display: 'block'
     },
@@ -80,33 +81,39 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const ImagePreview = (props)=> {
+export const ImagePreview = (props) => {
     const classes = useStyles();
     const [dataSource, setDataSource] = useSafeState([]);
     const [previewIndex, setPreviewIndex] = useSafeState(1);
-    const currentPath = useMemo(()=> dataSource[previewIndex-1]?.path, [previewIndex, dataSource]);
-    const currentDesc = useMemo(()=> dataSource[previewIndex-1]?.description, [previewIndex, dataSource]);
+    const currentPath = useMemo(() => dataSource[previewIndex - 1]?.path, [previewIndex, dataSource]);
+    const currentDesc = useMemo(() => dataSource[previewIndex - 1]?.description, [previewIndex, dataSource]);
     const handleClose = () => {
         props.onClose?.();
     };
-    useEffect(()=> {
-        if (props.type === IMAGE_TYPE.PRODUCT && props.uuid){
+    useEffect(() => {
+        if (props.type === IMAGE_TYPE.PRODUCT && props.uuid) {
             fetchProductPics({
                 uuid: props.uuid
-            }).then(res=> {
+            }).then(res => {
                 setDataSource(res.data);
-            }).catch((e)=> console.log(e));
+            }).catch((e) => console.log(e));
+        } else if (props.type === IMAGE_TYPE.GOODS && props.uuid) {
+            fetchGoodsPics({
+                uuid: props.uuid
+            }).then(res => {
+                setDataSource(res.data);
+            }).catch((e) => console.log(e));
         }
-        return ()=> {
-          setPreviewIndex(1);
+        return () => {
+            setPreviewIndex(1);
         }
         // eslint-disable-next-line
     }, [props.uuid]);
-    useEffect(()=>{
+    useEffect(() => {
         props.open && setPreviewIndex(1);
         // eslint-disable-next-line
     }, [props.open])
-    const onChange = (_, n)=> {
+    const onChange = (_, n) => {
         setPreviewIndex(n);
     }
     return (
@@ -123,16 +130,27 @@ export const ImagePreview = (props)=> {
                     timeout: 500,
                 }}
             >
-                <Fade in={props.open}>
-                    <div className={classes.paper}>
-                        <IconButton className={classes.closeIcon} onClick={props.onClose}>
-                            <CloseIcon />
-                        </IconButton>
-                        {currentDesc && <Typography component={"h6"} className={classes.ty}>{currentDesc}</Typography>}
-                        {currentPath && <img alt={"图片加载失败！它可能在物理上已经不存在~"} className={`${classes.img}`} src={currentPath} /> }
-                        {dataSource.length>0 && <div className={classes.pagination}><Pagination className={classes.p} color="primary" count={dataSource.length } onChange={onChange} /></div>}
-                    </div>
-                </Fade>
+                <div>
+                    <Fade in={props.open}>
+                        <div className={classes.paper}>
+                            <IconButton className={classes.closeIcon} onClick={props.onClose}>
+                                <CloseIcon/>
+                            </IconButton>
+                            {currentDesc &&
+                                <Typography component={"h6"} className={classes.ty}>{currentDesc}</Typography>}
+                            {currentPath &&
+                                <img alt={"图片加载失败！它可能在物理上已经不存在~"} className={`${classes.img}`}
+                                     src={currentPath}/>}
+                            {dataSource.length > 0 &&
+                                <div className={classes.pagination}><Pagination className={classes.p} color="primary"
+                                                                                count={dataSource.length}
+                                                                                onChange={onChange}/></div>}
+                        </div>
+
+                    </Fade>
+                    {dataSource.length<1 && <h5 style={{color: '#fefefe',padding: '10px 20px'}}>~没有照骗~</h5> }
+
+                </div>
             </Modal>
         </div>
     );

@@ -9,7 +9,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import {AvatarDefault} from "../../../components/Avatar/Avatar";
+import {AvatarDefault} from "../Avatar/Avatar";
 import vcSubscribePublish from "vc-subscribe-publish";
 import {InputAdornment} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
@@ -175,7 +175,7 @@ export const HomePageAppBar = (props) => {
                         <form onSubmit={onSubmit}>
                         <InputBase
                             ref={ref}
-                            placeholder="根据名称搜索…"
+                            placeholder={props.placeholder || "根据名称搜索…"}
                             classes={{
                                 root: classes.inputRoot,
                                 input: classes.inputInput,

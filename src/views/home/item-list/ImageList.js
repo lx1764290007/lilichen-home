@@ -14,7 +14,7 @@ import {ImagePreview} from "../../../components/ImagePreviewById/ImagePreview";
 // import Style from "./ImageList.module.css";
 import {useDebounceFn} from "ahooks";
 import {Loading} from "../../../components/Loading/Loading";
-import {useContainerStyle} from "../../../App";
+import {Context} from "../../../App";
 import vcSubscribePublish from "vc-subscribe-publish";
 import {fetchProductList, fetchProductRemove} from "../../../lib/request/produce";
 import {IMAGE_TYPE, PAGE_SIZE} from "../../../lib/static";
@@ -119,7 +119,7 @@ const FORMAT = "YYYY-MM-DD";
  */
 export const AdvancedImageList = () => {
     const classes = useStyles();
-    const classesContainer = useContainerStyle();
+    const mc = React.useContext(Context);
     const [open, setOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [dataSource, setDataSource] = useState([]);
@@ -257,6 +257,9 @@ export const AdvancedImageList = () => {
             handleModalClose();
         }
     }
+    const toSearchGoods = (event)=> {
+        vcSubscribePublish.public("onNavigate", "search-goods-list?productId=" + event);
+    }
     return (
         <div className={classes.root}>
             {newCol.length > 0 &&
@@ -274,14 +277,14 @@ export const AdvancedImageList = () => {
                         <div style={{position: "absolute", padding: 5, width: "100%"}}><Loading/></div>}
                     <ImageList ref={scrollRef} rowHeight={230} gap={1}
                                style={{transform: `translateY(${transformY}px)`}}
-                               className={`${classes.imageList} ${classesContainer.container}`}
+                               className={`${classes.imageList} ${mc.mStyle}`}
                                onTouchEnd={onTouchendHandler} onTouchMove={onTouchmoveHandler} onScroll={run}>
                         {newCol.map((item, key) => (
                             <ImageListItem key={key} cols={item.featured ? 2 : 1} rows={item.featured ? 2 : 1}>
                                 <IconButton className={classes.deleteIcon} onClick={() => onHandleRemove(item.id)}>
                                     <DeleteOutlineIcon/>
                                 </IconButton>
-                                <img src={item.img} alt={item.title}/>
+                                <img src={item.img} alt={item.title} onClick={()=> toSearchGoods(item.id)} />
                                 <ImageListItemBar
                                     title={<div onClick={() => previewOnOpen(item.uuid, item)}>{item.title}</div>}
                                     position="top"
@@ -318,7 +321,7 @@ export const AdvancedImageList = () => {
                     </ImageList>
                 </React.Fragment>}
             {newCol.length < 1 &&
-                <div className={classesContainer.container} style={{width: '100%', paddingTop: 100}}><Empty/></div>}
+                <div className={mc.mStyle} style={{width: '100%', paddingTop: 100}}><Empty/></div>}
             <ImagePreview type={IMAGE_TYPE.PRODUCT} open={previewOpen} uuid={picPreviewId} onClose={previewOnClose}/>
             <Fab className={classes.fab} color="primary" aria-label="add" onClick={toAddItemHandle}>
                 <AddIcon/>

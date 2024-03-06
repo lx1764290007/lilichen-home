@@ -5,7 +5,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import {useSafeState} from "ahooks";
 import {fetchSupplierAdd, fetchSupplierUpdate} from "../../lib/request/supplier";
 import vcSubscribePublish from "vc-subscribe-publish";
-import {useContainerWithoutNavigationBarStyle} from "../../App";
+import {Context} from "../../App";
 import {InputAdornment} from "@material-ui/core";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import PhoneIcon from '@material-ui/icons/Phone';
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const SupplierItem = (props)=> {
     const classes = useStyles();
-    const containerStyle = useContainerWithoutNavigationBarStyle();
+    const mc = React.useContext(Context);
     const [loading, setLoading] = useSafeState(false);
     const location = useLocation();
     const editData = useMemo(() => {
@@ -87,7 +87,7 @@ export const SupplierItem = (props)=> {
         vcSubscribePublish.public("onMessage", "已保存！！");
         vcSubscribePublish.public("onNavigate", -1);
     }
-     return <div className={`${classes.root} ${containerStyle.container}`}>
+     return <div className={`${classes.root} ${mc.mStyle}`}>
         <form onSubmit={onSubmit} className={classes.form} noValidate autoComplete="off">
             <TextField
                 margin="dense"

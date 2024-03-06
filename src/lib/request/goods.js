@@ -9,7 +9,15 @@ export const fetchGoodsList = async (data)=>{
         data
     });
 };
-
+export const fetchGoodsSearch = async (data)=>{
+    return await fetchHandle({
+        url: "goods-search",
+        config: {
+            method: "GET"
+        },
+        data
+    });
+};
 export const fetchGoodsAdd = async (data)=>{
     return await fetchHandle({
         url: "goods-add",

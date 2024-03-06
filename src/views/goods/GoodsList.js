@@ -15,9 +15,9 @@ import {ImagePreview} from "../../components/ImagePreviewById/ImagePreview";
 // import Style from "./ImageList.module.css";
 import {useDebounceFn} from "ahooks";
 import {Loading} from "../../components/Loading/Loading";
-import {useContainerStyle} from "../../App";
+import {Context} from "../../App";
 import vcSubscribePublish from "vc-subscribe-publish";
-import {fetchGoodsList, fetchGoodsRemove} from "../../lib/request/goods";
+import {fetchGoodsList, fetchGoodsRemove, fetchGoodsSearch} from "../../lib/request/goods";
 import {IMAGE_TYPE, PAGE_SIZE} from "../../lib/static";
 import {Empty} from "../../components/Empty/Empty";
 import AddIcon from '@material-ui/icons/Add';
@@ -28,6 +28,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import {DeleteOutlineSharp} from "@material-ui/icons";
 import {fetchSupplierList} from "../../lib/request/supplier";
 import {fetchProductList} from "../../lib/request/produce";
+import {useLocation} from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -47,7 +48,8 @@ const useStyles = makeStyles((theme) => ({
         transform: 'translateZ(0)',
         cursor: 'pointer',
         width: '100%',
-        overflowY: 'auto'
+        overflowY: 'auto',
+        boxSizing: 'border-box'
     },
     closeIcon: {
         color: red[200],
@@ -103,7 +105,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2)
     },
 }));
-const FORMAT = "YYYY-MM-DD";
+
 /**
  * The example data is structured as follows:
  *
@@ -122,13 +124,13 @@ const FORMAT = "YYYY-MM-DD";
  *   },
  * ];
  */
+export const SEARCH_PLACEHOLDER = "综合搜索";
 export const AdvancedGoodsList = () => {
     const classes = useStyles();
-    const classesContainer = useContainerStyle();
+    const mc = React.useContext(Context);
     const [open, setOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [dataSource, setDataSource] = useState([]);
-
     const [previewOpen, setPreviewOpen] = useState(false);
     const [touchMoveY, setTouchMoveY] = useState(9999999);
     const [transformY, setTransformY] = useState(0);
@@ -141,6 +143,7 @@ export const AdvancedGoodsList = () => {
     const [modalOpen, setModalOpen] = useState(0);
     const [productList, setProductList] = useState([]);
     const [supplierList, setSupplierList] = useState([]);
+    const location = useLocation();
     const newCol = useMemo(() => dataSource.map(it=>{
         return {
             ...it,
@@ -153,7 +156,7 @@ export const AdvancedGoodsList = () => {
         setAnchorEl(null);
         setTarget(null);
     }
-    const previewOnOpen = (uuid, item) => {
+    const previewOnOpen = (uuid) => {
         setPicPreviewId(uuid);
         setPreviewOpen(true);
     }
@@ -211,14 +214,49 @@ export const AdvancedGoodsList = () => {
             wait: 200
         }
     );
-    const fetchData = async (c, name) => {
+    //fetchGoodsSearch
+    const searchData = async (c, name) => {
         const _current = c || current;
-        const res = await fetchGoodsList({
+        const res = await fetchGoodsSearch({
             current: _current,
             size: PAGE_SIZE,
             name
         });
-        const _data = res.data?.map?.(it => {
+        const _data = res?.data?.map?.(it => {
+            return {
+                ...it,
+                img: it.preview,
+                title: it.name,
+                featured: true,
+                description: it.description,
+            }
+        });
+        if (_current === 1) {
+            setDataSource(autoCol(_data));
+        } else {
+            setDataSource(dataSource.concat(autoCol(_data)));
+        }
+        setTotal(res?.total);
+        return _data;
+    }
+
+    const fetchData = async (c, name) => {
+        const a = /\?productId=/g, b=/\?supplierId=/g;
+        let a_r, b_r;
+        if(a.test(location.search)){
+            a_r = location.search?.replace(a, "");
+        }else if (b.test(location.search)) {
+            b_r = location.search?.replace(b, "");
+        }
+        const _current = c || current;
+        const res = await fetchGoodsList({
+            current: _current,
+            size: PAGE_SIZE,
+            name,
+            product: a_r,
+            company: b_r
+        });
+        const _data = res?.data?.map?.(it => {
             return {
                 ...it,
                 img: it.preview,
@@ -246,7 +284,7 @@ export const AdvancedGoodsList = () => {
         }).then(res=> setProductList(res?.data)));
         vcSubscribePublish.subscribe("appOnSearch", (args) => {
             setParamName(args[0]);
-            fetchData(current, args[0]);
+            searchData(current, args[0]).catch(e=> console.log(e));
         })
         return () => vcSubscribePublish.unsubscribe("appOnSearch");
         // eslint-disable-next-line
@@ -278,6 +316,7 @@ export const AdvancedGoodsList = () => {
         setTarget(t);
         setOpen(t?.id);
     }
+
     return (
         <div className={classes.root}>
             <Popper open={open} anchorEl={anchorEl} placement={"left-end"} transition>
@@ -299,16 +338,15 @@ export const AdvancedGoodsList = () => {
                         <div style={{position: "absolute", padding: 5, width: "100%"}}><Loading/></div>}
                     <div ref={scrollRef}
                                style={{transform: `translateY(${transformY}px)`}}
-                               className={`${classes.list} ${classesContainer.container}`}
+                               className={`${classes.list} ${mc.mStyle}`}
                                onTouchEnd={onTouchendHandler} onTouchMove={onTouchmoveHandler} onScroll={run}>
                         {newCol.map((item, key) => (
-                            <AdvancedGoodsListItem dataSource={item} onMoreActionClick={onMoreActionClick} />
+                            <AdvancedGoodsListItem onOpenPicPreview={previewOnOpen} dataSource={item} onMoreActionClick={onMoreActionClick} />
                         ))}
                     </div>
                 </React.Fragment>}
             {newCol.length < 1 &&
-                <div className={classesContainer.container} style={{width: '100%', paddingTop: 100}}><Empty/></div>}
-            <ImagePreview type={IMAGE_TYPE.GOODS} open={previewOpen} uuid={picPreviewId} onClose={previewOnClose}/>
+                <div className={mc.mStyle} style={{width: '100%', paddingTop: 100, boxSizing: 'border-box'}}><Empty/></div>}
             <Fab className={classes.fab} color="primary" aria-label="add" onClick={toAddItemHandle}>
                 <AddIcon/>
             </Fab>
@@ -328,6 +366,7 @@ export const AdvancedGoodsList = () => {
                     </div>
                 </Paper>
             </Modal>
+            <ImagePreview type={IMAGE_TYPE.GOODS} open={previewOpen} uuid={picPreviewId} onClose={previewOnClose}/>
         </div>
     );
 }

@@ -5,7 +5,7 @@ import IconButton from '@material-ui/core/IconButton';
 import {PhotoCamera} from "@material-ui/icons";
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import vcSubscribePublish from "vc-subscribe-publish";
-import {useContainerWithoutNavigationBarStyle} from "../../../App";
+import {Context} from "../../../App";
 import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import {fetchFileRemove, fetchUploadProduct} from "../../../lib/request/upload";
@@ -144,7 +144,7 @@ let _data = [];
 
 export const ProductItem = () => {
     const classes = useStyles();
-    const classesContainer = useContainerWithoutNavigationBarStyle();
+    const mc = React.useContext(Context);
     const [paths, setPaths] = useSafeState("");
     const [dialogOpen, setDialogOpen] = useSafeState(false);
     const [currentTargetIndex, setCurrentTargetIndex] = useSafeState(-1);
@@ -231,7 +231,7 @@ export const ProductItem = () => {
         setCurrentTargetIndex(i);
     }
     return (
-        <div className={`${classes.root} ${classesContainer.container}`}>
+        <div className={`${classes.root} ${mc.mStyle}`}>
 
             {p[0] && <div className={classes.imgPreviewWrapper}><Typography
                 className={classes.previewText}>预览图的长度可能会被裁剪，但这不影响实际效果</Typography>
@@ -349,6 +349,9 @@ const Form = (props) => {
     const onSubmit = async (event) => {
         event.preventDefault();
         if (!name || loading) {
+            return
+        } else if (!props.paths[0]?.path) {
+            vcSubscribePublish.public("onErrorMessage", "未上传图片！！");
             return
         }
         setLoading(true);

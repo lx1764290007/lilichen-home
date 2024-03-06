@@ -13,6 +13,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from "@material-ui/core/Typography";
 import {ErrorOutline} from "@material-ui/icons";
+import StyleGlobal from "./global.module.css";
 
 const useStyles = makeStyles((theme) => ({
     menuButton: {
@@ -55,16 +56,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 700
     }
 }));
-export const useContainerStyle = makeStyles((theme) => ({
-    container: {
-        height: `calc(100vh - 64px - 64px)`
-    }
-}));
-export const useContainerWithoutNavigationBarStyle = makeStyles((theme) => ({
-    container: {
-        height: `calc(100vh - 64px)`
-    }
-}));
+
 const outerTheme = createTheme({
     palette: {
         primary: {
@@ -78,7 +70,7 @@ const Style = {
         padding: 0
     }
 }
-
+export const Context = React.createContext(null);
 function App() {
     const classes = useStyles();
     const navigate = useNavigate();
@@ -90,6 +82,7 @@ function App() {
     const [message, setMessage] = useState("UNKNOWN_MESSAGE");
     const [errorMessageOpen, setErrorMessageOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState("UNKNOWN_ERROR_MESSAGE");
+    const childStyle = useMemo(()=> routes.find(it => it.path === location.pathname)?.bottomNavigationBarShow? StyleGlobal.rc_container_with_navigation:StyleGlobal.rc_container_without_navigation, [location]);
     const onRouteChangeHandler = (_, newValue) => {
         // setMenuValue(newValue);
         navigate(newValue);
@@ -101,11 +94,11 @@ function App() {
             setMessageOpen(true);
         });
         vcSubscribePublish.subscribe("onErrorMessage", (args) => {
-            console.log(1)
             setErrorMessageOpen(false);
             setErrorMessage(args[0]);
             setErrorMessageOpen(true);
         });
+        
         vcSubscribePublish.subscribe("onNavigate", (args) => {
             navigate(args[0]);
         })
@@ -118,6 +111,7 @@ function App() {
     return (
         <div className="App">
             <ThemeProvider theme={outerTheme}>
+                <Context.Provider value={{mStyle: childStyle}}>
                 <Container style={Style.container} maxWidth="md" fixed>
                     {appBar}
                     <Routes>
@@ -145,6 +139,7 @@ function App() {
                         }
                     </BottomNavigation>}
                 </Container>
+                </Context.Provider>
                 <Snackbar
                     anchorOrigin={{
                         vertical: 'top',

@@ -1,5 +1,5 @@
 import React, {useRef, useState} from 'react';
-import {useContainerWithoutNavigationBarStyle} from '../../App';
+import {Context} from '../../App';
 import {makeStyles} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -87,7 +87,7 @@ export const LoginAppBarRight = () => {
     </React.Fragment>
 }
 export const Login = () => {
-    const classes = useContainerWithoutNavigationBarStyle();
+    const mc = React.useContext(Context);
     const classesRoot = useStyles();
     const accountValue = useRef(null);
     const passwordValue = useRef(null);
@@ -124,7 +124,7 @@ export const Login = () => {
         event.preventDefault();
     }
     return (
-        <div className={classes.container}>
+        <div className={mc.mStyle}>
             <img src={IMAGES[RANDOM_NUMBER]} alt={"funny"} className={classesRoot.img}/>
             <form className={classesRoot.root} autoComplete="off" onSubmit={onSubmit}>
                 <TextField error={Boolean(accountErrorText)} ref={accountValue} label="账号"

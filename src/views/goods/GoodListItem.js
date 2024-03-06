@@ -2,18 +2,18 @@ import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import {Avatar, Card, CardActions, CardContent, CardHeader, CardMedia, Collapse} from "@material-ui/core";
+import {Avatar, Card, CardContent, CardHeader, CardMedia, Collapse} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography"
-import {deepOrange} from "@material-ui/core/colors";
-import FavoriteIcon from '@material-ui/icons/Favorite';
+import {deepOrange, indigo} from "@material-ui/core/colors";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import ShareIcon from '@material-ui/icons/Share';
 import PersonPinIcon from "@material-ui/icons/PersonPin";
 import {HomeWork} from "@material-ui/icons";
+import dayjs from "dayjs";
 
 const useStyles = makeStyles((theme) => ({
     root2: {
         maxWidth: '100%',
+        position: 'relative'
     },
     media: {
         height: 0,
@@ -56,17 +56,47 @@ const useStyles = makeStyles((theme) => ({
         transform: 'translateY(3px)'
     },
     footer: {
-       justifyContent: 'space-between'
+        justifyContent: 'space-between'
     },
     expand2: {
         fontSize: "larger",
-        fontWeight: 600
+        fontWeight: 600,
+        position: 'absolute',
+        top: 10,
+        right: 10
     },
     product: {
         paddingBottom: 0,
         marginBottom: 0
-    }
+    },
+    property: {
+        display: 'flex',
+        flexFlow: 'row wrap',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        fontSize: 16,
+        paddingBottom: 20
+    },
+    footerItem: {
+        backgroundColor: indigo[100],
+        color: '#2b74d3',
+        overflow: 'hidden',
+        padding: '1px 8px',
+        boxSizing: 'content-box',
+        borderRadius: 15,
+        marginTop: 5,
+        marginLeft: 1
+    },
+    date: {
+        position: "absolute",
+        top: 100,
+        color: '#fefefe',
+        zIndex: 1,
+        right: 10,
+        fontSize: 14
+    },
 }));
+const FORMAT = "YYYY-MM-DD";
 /**
  * The example data is structured as follows:
  *
@@ -103,46 +133,58 @@ export const AdvancedGoodsListItem = (props) => {
                     </Avatar>
                 }
                 action={
-                    <IconButton aria-label="settings" onClick={(event)=> props.onMoreActionClick?.(event,props.dataSource)}>
+                    <IconButton aria-label="settings"
+                                onClick={(event) => props.onMoreActionClick?.(event, props.dataSource)}>
                         <MoreVertIcon/>
                     </IconButton>
                 }
                 title={<Typography component={"h4"} className={classes.title}><PersonPinIcon
                     className={classes.titleIcon}/>{props.dataSource?.name}</Typography>}
-                subheader={<Typography  color={"primary"} paragraph variant={'subtitle2'} component={'p'}><HomeWork className={classes.titleIcon2}/>{props.dataSource?._supplierName}</Typography>}
+                subheader={<Typography color={"primary"} paragraph variant={'subtitle2'} component={'p'}><HomeWork
+                    className={classes.titleIcon2}/>{props.dataSource?._supplierName}</Typography>}
             />
             <CardMedia
                 className={classes.media}
                 image={props.dataSource?.preview}
                 title="pics"
+                onClick={()=> props.onOpenPicPreview?.(props.dataSource?.uuid)}
             />
-            <CardContent>
-                <Typography paragraph variant={'h6'} className={classes.product} component={'p'}>
+            <Typography
+                className={classes.date}>{dayjs(props.dataSource?.updateTime).format(FORMAT)}</Typography>
+            <CardContent style={{position: 'relative'}}>
+                <Typography paragraph variant={'h6'} className={classes.product} color={'textPrimary'} component={'p'}>
                     {props.dataSource?._productName}
                 </Typography>
-
-            </CardContent>
-            <CardActions disableSpacing className={classes.footer}>
-                <IconButton aria-label="add to favorites">
-                    <FavoriteIcon/>
-                </IconButton>
-
+                <Typography paragraph variant={'caption'} color={'textSecondary'}>
+                    (相关产品)
+                </Typography>
                 <IconButton
                     onClick={handleExpandClick}
                     aria-expanded={expanded}
                     aria-label="show more"
                     className={classes.expand2}
-                >
-                    <ExpandMoreIcon className={expanded? classes.moreIconUp:classes.moreIconDown} />
+                > <Typography paragraph variant={'caption'} style={{marginBottom: 0}} component={'span'} color={'textSecondary'}>{expanded?'收起':'更多'}</Typography>
+                    <ExpandMoreIcon style={{transform: `rotateX(${expanded?'180deg':0})`}} />
                 </IconButton>
-            </CardActions>
+            </CardContent>
             <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>
-                    <Typography variant="subtitle1" color="textPrimary" >
+                    <div className={classes.property}>
+                        {props.dataSource?.fabric && <Typography className={classes.footerItem}
+                                                                 variant={'body1'}>材质: {props.dataSource?.fabric}</Typography>}
+                        {props.dataSource?.specs && <Typography className={classes.footerItem}
+                                                                variant={'body1'}>规格: {props.dataSource?.specs}</Typography>}
+                        {props.dataSource?.price && <Typography className={classes.footerItem}
+                                                                variant={'body1'}>单价: {props.dataSource?.price}</Typography>}
+                        {props.dataSource?.stock && <Typography className={classes.footerItem}
+                                                                variant={'body1'}>库存: {props.dataSource?.stock}</Typography>}
+                    </div>
+                    <Typography variant="subtitle1" color="textSecondary">
                         {props.dataSource?.description}
                     </Typography>
                 </CardContent>
             </Collapse>
         </Card>
+
     );
 }

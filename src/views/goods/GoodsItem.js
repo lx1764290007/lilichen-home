@@ -5,7 +5,7 @@ import IconButton from '@material-ui/core/IconButton';
 import {PhotoCamera} from "@material-ui/icons";
 // import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import vcSubscribePublish from "vc-subscribe-publish";
-import {useContainerWithoutNavigationBarStyle} from "../../App";
+import {Context} from "../../App";
 import {
     Dialog,
     DialogActions,
@@ -149,7 +149,7 @@ let _data = [];
 
 export const GoodsItem = () => {
     const classes = useStyles();
-    const classesContainer = useContainerWithoutNavigationBarStyle();
+    const mc = React.useContext(Context);
     const [paths, setPaths] = useSafeState("");
     const [dialogOpen, setDialogOpen] = useSafeState(false);
     const [currentTargetIndex, setCurrentTargetIndex] = useSafeState(-1);
@@ -236,7 +236,7 @@ export const GoodsItem = () => {
         setCurrentTargetIndex(i);
     }
     return (
-        <div className={`${classes.root} ${classesContainer.container}`}>
+        <div className={`${classes.root} ${mc.mStyle}`}>
 
             {p[0] && <div className={classes.imgPreviewWrapper}><Typography
                 className={classes.previewText}>预览图的长度可能会被裁剪，但这不影响实际效果</Typography>
@@ -355,12 +355,13 @@ const Form = (props) => {
     const [price, setPrice] = useSafeState(props.editData?.price);
     const [specs, setSpecs] = useSafeState(props.editData?.specs);
     const [fabric, setFabric] = useSafeState(props.editData?.fabric);
-    const [product, setProduct] = useSafeState(props.editData?.product);
-    const [supplier, setSupplier] = useSafeState(props.editData?.company);
+    const [product, setProduct] = useSafeState({id: props.editData?.product, name: props.editData?.productName});
+    const [supplier, setSupplier] = useSafeState({id: props.editData?.company, name: props.editData?.companyName});
     const onSubmit = async (event) => {
       //  console.log(name, supplier, product, fabric, price,stock)
         event.preventDefault();
-        if (!name || loading || !supplier || !product) {
+        if (!name || loading || !supplier || !product || !props.paths[0]?.path) {
+            vcSubscribePublish.public("onErrorMessage", "关键信息未填或者没有上传图片..")
             return
         }
         setLoading(true);
@@ -373,8 +374,10 @@ const Form = (props) => {
                 stock,
                 price,
                 fabric,
-                product,
-                company: supplier,
+                product: product.id,
+                company: supplier.id,
+                productName: product.name,
+                companyName: supplier.name,
                 specs,
                 paths: window.encodeURIComponent(JSON.stringify(props.paths)),
                 preview: window.encodeURIComponent(props.paths[0]?.path)
@@ -388,8 +391,10 @@ const Form = (props) => {
                 stock,
                 price,
                 fabric,
-                product,
-                company: supplier,
+                product: product.id,
+                company: supplier.id,
+                productName: product.name,
+                companyName: supplier.name,
                 specs,
                 paths: window.encodeURIComponent(JSON.stringify(props.paths)),
                 preview: window.encodeURIComponent(props.paths[0]?.path)

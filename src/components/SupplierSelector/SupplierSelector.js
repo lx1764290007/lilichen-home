@@ -31,7 +31,8 @@ export const SupplierSelector = (props) => {
 
     const handleChange = (event) => {
         setValue(Number(event.target.value));
-        props.onChange?.(event.target.value);
+        const _name = dataSource.find(it=> it.id === event.target.value)?.name;
+        props.onChange?.({id: event.target.value, name:_name});
     };
     useMount(() => {
         fetchSupplierList({
