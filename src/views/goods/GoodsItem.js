@@ -23,6 +23,7 @@ import DeleteOutlineIcon from '@material-ui/icons/Delete';
 import {useLocation} from "react-router-dom";
 import {ProductSelector} from "../../components/ProductSeletor/ProductSelector";
 import {SupplierSelector} from "../../components/SupplierSelector/SupplierSelector";
+import {IMAGE_TYPE} from "../../lib/static";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -146,7 +147,7 @@ const useStyles = makeStyles((theme) => ({
 
 // {path: string, description: string, id?:number}
 let _data = [];
-
+let deletePath = [];
 export const GoodsItem = () => {
     const classes = useStyles();
     const mc = React.useContext(Context);
@@ -165,7 +166,10 @@ export const GoodsItem = () => {
         vcSubscribePublish.subscribe("goods-upload", args => {
             uploadHandle(args[0]).catch(e => console.log(e))
         });
-        return () => vcSubscribePublish.unsubscribe("goods-upload")
+        return () => {
+            vcSubscribePublish.unsubscribe("goods-upload");
+            deletePath = [];
+        }
         // eslint-disable-next-line
     }, []);
     useEffect(() => {
@@ -224,16 +228,24 @@ export const GoodsItem = () => {
             setPaths(path);
         }
     }
-    const handleDelete = (path) => {
+    const handleDelete = (path, ignore = false) => {
         _data = _data.filter((it) => it.path !== path);
+        (!editData || ignore) &&
         fetchFileRemove({
-            target: window.encodeURIComponent(path)
+            target: window.encodeURIComponent(path),
+            type: editData? IMAGE_TYPE.GOODS:undefined
         }).catch(e => console.log(e));
         setPaths(paths === path ? "" : path);
+        editData && !ignore && deletePath.push(path)
     }
     const onImgDescOpenHandle = (i) => {
         setDialogOpen(true);
         setCurrentTargetIndex(i);
+    }
+    const onConfirm = ()=> {
+        for(let k of Array.from(new Set(deletePath))){
+            handleDelete(k, true);
+        }
     }
     return (
         <div className={`${classes.root} ${mc.mStyle}`}>
@@ -260,7 +272,7 @@ export const GoodsItem = () => {
                     </div>
                 })}
             </div>
-            <Form paths={p} editData={editData}/>
+            <Form paths={p} editData={editData} onConfirm={onConfirm} />
 
             <FormDialog open={dialogOpen} defaultValue={p[currentTargetIndex]?.description} onClose={onDialogClose}
                         onConfirm={onDialogConfirm}/>
@@ -367,13 +379,14 @@ const Form = (props) => {
         setLoading(true);
 
         if(props.editData?.id) {
-            await fetchGoodsUpdate({
+            fetchGoodsUpdate({
                 id: props.editData?.id,
                 name,
                 description,
                 stock,
                 price,
                 fabric,
+                uuid: props.editData?.uuid,
                 product: product.id,
                 company: supplier.id,
                 productName: product.name,
@@ -383,9 +396,14 @@ const Form = (props) => {
                 preview: window.encodeURIComponent(props.paths[0]?.path)
             }).finally(() => {
                 setLoading(false);
+            }).then(()=>{
+                props.onConfirm?.();
+                vcSubscribePublish.public("onMessage", "已保存！！");
+                vcSubscribePublish.public("onNavigate", -1);
             })
+
         } else {
-            await fetchGoodsAdd({
+            fetchGoodsAdd({
                 name,
                 description,
                 stock,
@@ -400,10 +418,12 @@ const Form = (props) => {
                 preview: window.encodeURIComponent(props.paths[0]?.path)
             }).finally(() => {
                 setLoading(false);
+            }).then(()=>{
+                vcSubscribePublish.public("onMessage", "已保存！！");
+                vcSubscribePublish.public("onNavigate", -1);
             })
         }
-        vcSubscribePublish.public("onMessage", "已保存！！");
-        vcSubscribePublish.public("onNavigate", -1);
+
     }
 
     const HandleProductChange = (val)=> {

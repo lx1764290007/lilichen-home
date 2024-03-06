@@ -15,6 +15,7 @@ import TextField from "@material-ui/core/TextField";
 import {fetchProductAdd, fetchProductList, fetchProductPics, fetchProductUpdate} from "../../../lib/request/produce";
 import DeleteOutlineIcon from '@material-ui/icons/Delete';
 import {useLocation} from "react-router-dom";
+import {IMAGE_TYPE} from "../../../lib/static";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -141,7 +142,7 @@ export const Back = () => {
 }
 // {path: string, description: string, id?:number}
 let _data = [];
-
+let deletePath = [];
 export const ProductItem = () => {
     const classes = useStyles();
     const mc = React.useContext(Context);
@@ -150,6 +151,7 @@ export const ProductItem = () => {
     const [currentTargetIndex, setCurrentTargetIndex] = useSafeState(-1);
     // eslint-disable-next-line
     const p = useMemo(() => _data, [paths, currentTargetIndex]);
+
     const location = useLocation();
     const editData = useMemo(() => {
         if (/^\?params/g.test(location.search)) {
@@ -160,7 +162,10 @@ export const ProductItem = () => {
         vcSubscribePublish.subscribe("product-upload", args => {
             uploadHandle(args[0]).catch(e => console.log(e))
         });
-        return () => vcSubscribePublish.unsubscribe("product-upload")
+        return () => {
+            vcSubscribePublish.unsubscribe("product-upload");
+            deletePath = [];
+        }
         // eslint-disable-next-line
     }, []);
     useEffect(() => {
@@ -219,16 +224,24 @@ export const ProductItem = () => {
             setPaths(path);
         }
     }
-    const handleDelete = (path) => {
+    const handleDelete = (path, ignore= false) => {
         _data = _data.filter((it) => it.path !== path);
+        (!editData || ignore) &&
         fetchFileRemove({
-            target: window.encodeURIComponent(path)
+            target: window.encodeURIComponent(path),
+            type: editData? IMAGE_TYPE.PRODUCT:undefined
         }).catch(e => console.log(e));
         setPaths(paths === path ? "" : path);
+        editData && !ignore && deletePath.push(path)
     }
     const onImgDescOpenHandle = (i) => {
         setDialogOpen(true);
         setCurrentTargetIndex(i);
+    }
+    const onConfirm = ()=> {
+        for(let k of Array.from(new Set(deletePath))){
+            handleDelete(k, true);
+        }
     }
     return (
         <div className={`${classes.root} ${mc.mStyle}`}>
@@ -255,7 +268,7 @@ export const ProductItem = () => {
                     </div>
                 })}
             </div>
-            <Form paths={p} editData={editData}/>
+            <Form paths={p} editData={editData} onConfirm={onConfirm} />
 
             <FormDialog open={dialogOpen} defaultValue={p[currentTargetIndex]?.description} onClose={onDialogClose}
                         onConfirm={onDialogConfirm}/>
@@ -361,23 +374,31 @@ const Form = (props) => {
                 id: props.editData?.id,
                 name,
                 description,
+                uuid: props.editData?.uuid,
                 paths: window.encodeURIComponent(JSON.stringify(props.paths)),
                 preview: window.encodeURIComponent(props.paths[0]?.path)
             }).finally(() => {
                 setLoading(false);
+            }).then(()=>{
+                props.onConfirm?.()
+                vcSubscribePublish.public("onMessage", "已保存！！");
+                vcSubscribePublish.public("onNavigate", -1);
             })
+
         } else {
-            await fetchProductAdd({
+            fetchProductAdd({
                 name,
                 description,
                 paths: window.encodeURIComponent(JSON.stringify(props.paths)),
                 preview: window.encodeURIComponent(props.paths[0]?.path)
             }).finally(() => {
                 setLoading(false);
+            }).then(()=>{
+                vcSubscribePublish.public("onMessage", "已保存！！");
+                vcSubscribePublish.public("onNavigate", -1);
             })
         }
-        vcSubscribePublish.public("onMessage", "已保存！！");
-        vcSubscribePublish.public("onNavigate", -1);
+
     }
     return <div className={classes.form}>
         <form onSubmit={onSubmit} noValidate autoComplete="off">
