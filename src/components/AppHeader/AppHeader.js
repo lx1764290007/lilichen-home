@@ -80,7 +80,7 @@ export const HomePageAppBar = (props) => {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
+    const [value, setValue] = React.useState("");
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
     const ref = useRef(null);
@@ -102,6 +102,7 @@ export const HomePageAppBar = (props) => {
         event.preventDefault();
     }
     const onClearHandler = ()=> {
+        setValue("");
         const _input = ref.current.querySelector("input");
         if(_input) {
             _input.value = "";
@@ -180,9 +181,10 @@ export const HomePageAppBar = (props) => {
                                 root: classes.inputRoot,
                                 input: classes.inputInput,
                             }}
+                            onInput={(event)=> setValue(event.target.value)}
                             inputProps={{'aria-label': 'search'}}
                             endAdornment={
-                                <InputAdornment position="end">
+                                value && <InputAdornment position="end">
                                     <IconButton
                                         aria-label="clear input value"
                                         style={{color: '#fff'}}

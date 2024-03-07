@@ -98,7 +98,11 @@ const useStyles = makeStyles((theme) => ({
     title: {
         display: 'flex',
         alignItems: 'center',
-        fontWeight: 600
+        fontWeight: 600,
+        cursor: 'pointer',
+        '&:hover': {
+            color: '#539ee1'
+        }
     },
     titleIcon: {
         color: '#4f90d2',
@@ -301,7 +305,7 @@ export const Supplier = () => {
                          style={{transform: `translateY(${transformY}px)`}}
                          className={`${classes.list} ${mc.mStyle}`}
                          onTouchEnd={onTouchendHandler} onTouchMove={onTouchmoveHandler} onScroll={run}>
-                        {newCol.map(item => <Card key={item.id} className={classes.card} onClick={()=> toGoodsSearchHandle(item.id)}>
+                        {newCol.map(item => <Card key={item.id} className={classes.card} >
                             <CardHeader
                                 avatar={
                                     <Avatar aria-label="recipe" className={classes.avatar}>
@@ -314,7 +318,7 @@ export const Supplier = () => {
                                         <MoreVertIcon/>
                                     </IconButton>
                                 }
-                                title={<Typography component={"h5"} className={classes.title}><PersonPinIcon
+                                title={<Typography component={"h5"} className={classes.title} onClick={()=> toGoodsSearchHandle(item.id)}><PersonPinIcon
                                     className={classes.titleIcon}/>{item.name}</Typography>}
                                 subheader={<><PhoneIcon className={classes.titleIcon2}/>{item.phone}</>}
                             />

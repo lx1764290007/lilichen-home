@@ -61,13 +61,13 @@ const useStyles = makeStyles((theme) => ({
     expand2: {
         fontSize: "larger",
         fontWeight: 600,
-        position: 'absolute',
-        top: 10,
-        right: 10
+        position: 'relative',
+        flex: 1
     },
-    product: {
+    desc: {
         paddingBottom: 0,
-        marginBottom: 0
+        marginBottom: 0,
+        flex: 5
     },
     property: {
         display: 'flex',
@@ -95,6 +95,12 @@ const useStyles = makeStyles((theme) => ({
         right: 10,
         fontSize: 14
     },
+    content: {
+        display: 'flex',
+        flexFlow: 'row nowrap',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start'
+    }
 }));
 const FORMAT = "YYYY-MM-DD";
 /**
@@ -147,25 +153,18 @@ export const AdvancedGoodsListItem = (props) => {
                 className={classes.media}
                 image={props.dataSource?.preview}
                 title="pics"
-                onClick={()=> props.onOpenPicPreview?.(props.dataSource?.uuid)}
+                onClick={() => props.onOpenPicPreview?.(props.dataSource?.uuid)}
             />
             <Typography
                 className={classes.date}>{dayjs(props.dataSource?.updateTime).format(FORMAT)}</Typography>
-            <CardContent style={{position: 'relative'}}>
-                <Typography paragraph variant={'h6'} className={classes.product} color={'textPrimary'} component={'p'}>
-                    {props.dataSource?._productName}
+            <CardContent style={{position: 'relative'}} className={classes.content}>
+                <Typography paragraph variant={'body2'} className={classes.desc} color={'textPrimary'} component={'p'}>
+                    {props.dataSource?.description}
                 </Typography>
-                <Typography paragraph variant={'caption'} color={'textSecondary'}>
-                    (相关产品)
-                </Typography>
-                <IconButton
-                    onClick={handleExpandClick}
-                    aria-expanded={expanded}
-                    aria-label="show more"
-                    className={classes.expand2}
-                > <Typography paragraph variant={'caption'} style={{marginBottom: 0}} component={'span'} color={'textSecondary'}>{expanded?'收起':'更多'}</Typography>
-                    <ExpandMoreIcon style={{transform: `rotateX(${expanded?'180deg':0})`}} />
-                </IconButton>
+                <Typography paragraph onClick={handleExpandClick} variant={'caption'} style={{marginBottom: 0}} component={'span'}
+                            color={'textSecondary'}>{expanded ? '收起' : '更多'}</Typography>
+                <ExpandMoreIcon style={{transform: `rotateX(${expanded ? '180deg' : 0})`,fontSize: 18}}/>
+
             </CardContent>
             <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>
@@ -180,7 +179,10 @@ export const AdvancedGoodsListItem = (props) => {
                                                                 variant={'body1'}>库存: {props.dataSource?.stock}</Typography>}
                     </div>
                     <Typography variant="subtitle1" color="textSecondary">
-                        {props.dataSource?.description}
+                        {props.dataSource?._productName}
+                    </Typography>
+                    <Typography paragraph variant={'caption'} color={'textSecondary'}>
+                        (相关产品)
                     </Typography>
                 </CardContent>
             </Collapse>

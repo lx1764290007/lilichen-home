@@ -18,10 +18,10 @@ import {NotFound} from "../views/404/NotFound";
 export const routes = [
     {
         component: <HomePage />,
-        title: "基础产品",
-        appBar: <HomePageAppBar title={"基础产品"} icon={<DeckIcon />} />,
+        title: "产品",
+        appBar: <HomePageAppBar title={"产品"} icon={<DeckIcon />} />,
         path: "/",
-        name: "基础产品",
+        name: "产品",
         navigation: true,
         icon: <HomeIcon />,
         bottomNavigationBarShow: true
@@ -75,38 +75,38 @@ export const routes = [
     //SupplierItem
     {
         component: <GoodsItem />,
-        title: "进阶产品添加",
-        appBar: <AppToolbar left={<Back />} title={"进阶产品添加"} right={<GoodsItemTopRightButton />} />,
+        title: "布料添加",
+        appBar: <AppToolbar left={<Back />} title={"布料添加"} right={<GoodsItemTopRightButton />} />,
         path: "/goods-add",
-        name: "进阶产品添加",
+        name: "布料添加",
         navigation: false,
         bottomNavigationBarShow: false
     },
     {
         component: <GoodsItem />,
-        title: "进阶产品编辑",
-        appBar: <AppToolbar left={<Back />} title={"进阶产品编辑"} right={<GoodsItemTopRightButton />} />,
+        title: "布料编辑",
+        appBar: <AppToolbar left={<Back />} title={"布料编辑"} right={<GoodsItemTopRightButton />} />,
         path: "/goods-update",
-        name: "进阶产品编辑",
+        name: "布料编辑",
         navigation: false,
         bottomNavigationBarShow: false
     },
     {
         component: <AdvancedGoodsList />,
-        title: "进阶产品",
-        appBar: <HomePageAppBar placeholder={SEARCH_PLACEHOLDER} title={"进阶产品列表"} icon={<BookmarksIcon />} />,
+        title: "布料",
+        appBar: <HomePageAppBar placeholder={SEARCH_PLACEHOLDER} title={"布料列表"} icon={<BookmarksIcon />} />,
         path: "/goods-list",
-        name: "进阶产品",
+        name: "布料",
         icon: <LibraryBooksIcon />,
         navigation: true,
         bottomNavigationBarShow: true
     },
     {
         component: <AdvancedGoodsList />,
-        title: "进阶产品搜索结果",
-        appBar: <AppToolbar left={<Back />} title={"搜索结果"} />,
+        title: "布料搜索结果",
+        appBar: <AppToolbar left={<Back />} title={"布料搜索结果"} />,
         path: "/search-goods-list",
-        name: "进阶产品",
+        name: "布料类型",
         icon: <LibraryBooksIcon />,
         navigation: false,
         bottomNavigationBarShow: false

@@ -144,6 +144,7 @@ export const AdvancedGoodsList = () => {
     const [productList, setProductList] = useState([]);
     const [supplierList, setSupplierList] = useState([]);
     const location = useLocation();
+    const showFab = useMemo(()=> /\?productId=/g.test(location.search) === false && /\?supplierId=/g.test(location.search) === false, [location])
     const newCol = useMemo(() => dataSource.map(it=>{
         return {
             ...it,
@@ -347,9 +348,9 @@ export const AdvancedGoodsList = () => {
                 </React.Fragment>}
             {newCol.length < 1 &&
                 <div className={mc.mStyle} style={{width: '100%', paddingTop: 100, boxSizing: 'border-box'}}><Empty/></div>}
-            <Fab className={classes.fab} color="primary" aria-label="add" onClick={toAddItemHandle}>
+            {showFab && <Fab className={classes.fab} color="primary" aria-label="add" onClick={toAddItemHandle}>
                 <AddIcon/>
-            </Fab>
+            </Fab> }
             <Modal
                 disableEnforceFocus
                 open={Boolean(modalOpen)}

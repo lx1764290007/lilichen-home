@@ -73,10 +73,10 @@ const useStyles = makeStyles((theme) => ({
     },
     closeIcon: {
         position: 'fixed',
-        top: 70,
+        top: 30,
         right: 10,
         color: '#fff',
-        fontSize: 60,
+        fontSize: 64,
         zIndex: 10
     }
 }));
