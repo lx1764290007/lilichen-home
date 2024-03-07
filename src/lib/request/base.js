@@ -32,7 +32,7 @@ export const onResponseHandle = function (res, resolve, reject) {
             onResponseError(res, reject);
         } else if (res.status === 200) {
             res.json().then((x) => resolve(x)).catch(() => {
-                resolve(null);
+                reject(null);
             });
         } else onResponseError(res, reject);
     }

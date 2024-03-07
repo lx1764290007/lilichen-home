@@ -209,7 +209,7 @@ export const AdvancedImageList = () => {
             size: PAGE_SIZE,
             name
         });
-        const _data = res.data?.map?.(it => {
+        const _data = res?.data?.map?.(it => {
             return {
                 ...it,
                 img: it.preview,

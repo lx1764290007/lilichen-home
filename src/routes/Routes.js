@@ -14,6 +14,7 @@ import {AdvancedGoodsList, SEARCH_PLACEHOLDER} from "../views/goods/GoodsList";
 import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
 import BookmarksIcon from '@material-ui/icons/Bookmarks';
 import OfflineBoltIcon from '@material-ui/icons/OfflineBolt';
+import {NotFound} from "../views/404/NotFound";
 export const routes = [
     {
         component: <HomePage />,
@@ -122,12 +123,20 @@ export const routes = [
     },
     {
         component: <div>page3</div>,
-        title: "page3",
-        path: "/page3",
-        name: "系统",
+        title: "设置",
+        path: "/setting",
+        name: "设置",
         appBar: <AppToolbar />,
         navigation: true,
         icon: <SettingIcon />,
         bottomNavigationBarShow: true
+    },
+    {
+        component: <NotFound />,
+        title: "404",
+        path: "/*",
+        name: "404",
+        navigation: false,
+        bottomNavigationBarShow: false
     }
 ];
