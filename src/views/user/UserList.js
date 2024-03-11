@@ -4,7 +4,6 @@ import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import {BONUS} from "../../tools/tools";
 import PersonPinIcon from '@material-ui/icons/PersonPin';
-import PhoneIcon from '@material-ui/icons/Phone';
 import {
     Avatar,
     ButtonGroup,
@@ -15,23 +14,24 @@ import {
     ClickAwayListener,
     Fab,
     Fade,
+    FormControlLabel,
     Paper,
-    Popper
+    Popper,
+    Switch
 } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography"
-import {deepPurple, red} from "@material-ui/core/colors";
+import {blue, red} from "@material-ui/core/colors";
 import {useDebounceFn} from "ahooks";
 import {Loading} from "../../components/Loading/Loading";
 import {Context} from "../../App";
 import vcSubscribePublish from "vc-subscribe-publish";
-import {fetchSupplierList, fetchSupplierRemove} from "../../lib/request/supplier";
+import {fetchUserList, fetchUserRemove, fetchUserUpdate} from "../../lib/request/user";
 import {PAGE_SIZE} from "../../lib/static";
 import {Empty} from "../../components/Empty/Empty";
 import AddIcon from '@material-ui/icons/Add';
-import RoomIcon from '@material-ui/icons/Room';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Button from "@material-ui/core/Button";
-import {DeleteOutlineSharp} from "@material-ui/icons";
+import {DeleteOutlineSharp, VerifiedUserOutlined} from "@material-ui/icons";
 import Modal from "@material-ui/core/Modal";
 
 
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     },
     media: {},
     avatar: {
-        backgroundColor: deepPurple[500],
+        backgroundColor: blue[500],
     },
     closeIcon: {
         color: red[200],
@@ -134,6 +134,13 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
         textAlign: 'right',
         marginTop: theme.spacing(2)
+    },
+    switch: {
+        position: 'relative',
+        textAlign: 'right',
+        display: 'block',
+        width: '100%',
+        boxSizing: 'border-box'
     }
 }));
 
@@ -155,7 +162,7 @@ const useStyles = makeStyles((theme) => ({
  *   },
  * ];
  */
-export const Supplier = () => {
+export const UserList = () => {
     const classes = useStyles();
     const mc = React.useContext(Context);
     const [open, setOpen] = useState(false);
@@ -210,7 +217,7 @@ export const Supplier = () => {
         }
     }
     const handleRefresh = () => {
-        fetchData(1).then(()=> setCurrent(1));
+        fetchData(1).then(() => setCurrent(1));
     }
     const onscrollHandler = async ({target}) => {
         const scrollHeight = target.scrollHeight,
@@ -230,7 +237,7 @@ export const Supplier = () => {
     );
     const fetchData = async (c, name) => {
         const _current = c || current;
-        const res = await fetchSupplierList({
+        const res = await fetchUserList({
             current: _current,
             size: PAGE_SIZE,
             name
@@ -245,7 +252,7 @@ export const Supplier = () => {
     }
 
     useEffect(() => {
-        fetchData().then(()=> void 0);
+        fetchData().then(() => void 0);
         vcSubscribePublish.subscribe("appOnSearch", (args) => {
             setParamName(args[0]);
         })
@@ -253,16 +260,19 @@ export const Supplier = () => {
         // eslint-disable-next-line
     }, []);
     const handleToEdit = (event) => {
-        vcSubscribePublish.public("onNavigate", "/supplier-update?params=" + window.encodeURIComponent(JSON.stringify(event)));
+        vcSubscribePublish.public("onNavigate", "/profile?params=" + window.encodeURIComponent(JSON.stringify(event)));
     }
     const toAddItemHandle = () => {
-        vcSubscribePublish.public("onNavigate", "/supplier-add")
+        vcSubscribePublish.public("onNavigate", "/profile-add")
     }
-    const handleOnRemove = async ()=> {
-        await fetchSupplierRemove({
-            id: target.id
+    const handleToPassword = (account)=> {
+        vcSubscribePublish.public("onNavigate", "/password?account=" + account)
+    }
+    const handleOnRemove = async () => {
+        await fetchUserRemove({
+            account: target.account
         });
-        const newData = dataSource.filter(k=> k.id !==target.id);
+        const newData = dataSource.filter(k => k.account !== target.account);
         setDataSource(newData);
         setOpen(false);
         setAnchorEl(null);
@@ -280,8 +290,28 @@ export const Supplier = () => {
             handleOnRemove();
         }
     }
-    const toGoodsSearchHandle = async(id) => {
-        vcSubscribePublish.public("onNavigate", "/search-goods-list?supplierId="+id);
+    const handleAuthChange = (item) => {
+        const {account, root} = item;
+        fetchUserUpdate({
+            ...item,
+            root: !root
+        }).then(()=> {
+            const d = dataSource.map(it => {
+                if (it.account === account) {
+                    return {
+                        ...it,
+                        root: !root
+                    }
+                } else {
+                    return it
+                }
+            })
+            setDataSource(d);
+        })
+
+    }
+    const toGoodsSearchHandle = async (id) => {
+        vcSubscribePublish.public("onNavigate", "/search-goods-list?supplierId=" + id);
     }
     return (
         <div className={classes.supplierRoot}>
@@ -292,20 +322,26 @@ export const Supplier = () => {
                             <ClickAwayListener onClickAway={handleClickAway}><Paper>
                                 {/*<CloseIcon className={classes.closeIcon} />*/}
                                 <ButtonGroup variant={"text"} orientation="vertical">
-                                    <Button color={"primary"} startIcon={<EditIcon/>} onClick={()=> handleToEdit(target)}>编辑</Button>
-                                    <Button color={"secondary"} startIcon={<DeleteOutlineSharp/> } onClick={onHandleRemove}>删除</Button>
+                                    <Button color={"primary"} startIcon={<EditIcon/>}
+                                            onClick={() => handleToEdit(target)}>编辑</Button>
+
+                                    <Button color={"secondary"} startIcon={<DeleteOutlineSharp/>}
+                                            onClick={onHandleRemove}>删除</Button>
+                                    <Button color={"primary"} startIcon={<VerifiedUserOutlined/>}
+                                            onClick={() => handleToPassword(target.account)}>修改密码</Button>
                                 </ButtonGroup>
                             </Paper></ClickAwayListener>
                         </Fade>
                     )}
                 </Popper>
                     {transformY >= BONUS / 2 &&
-                        <div style={{position: "absolute", padding: 5, width: "100%",boxSizing:'border-box'}}><Loading/></div>}
+                        <div style={{position: "absolute", padding: 5, width: "100%", boxSizing: 'border-box'}}>
+                            <Loading/></div>}
                     <div ref={scrollRef}
                          style={{transform: `translateY(${transformY}px)`}}
                          className={`${classes.list} ${mc.mStyle}`}
                          onTouchEnd={onTouchendHandler} onTouchMove={onTouchmoveHandler} onScroll={run}>
-                        {newCol.map(item => <Card key={item.id} className={classes.card} >
+                        {newCol.map(item => <Card key={item.id} className={classes.card}>
                             <CardHeader
                                 avatar={
                                     <Avatar aria-label="recipe" className={classes.avatar}>
@@ -318,9 +354,10 @@ export const Supplier = () => {
                                         <MoreVertIcon/>
                                     </IconButton>
                                 }
-                                title={<Typography component={"h5"} className={classes.title} onClick={()=> toGoodsSearchHandle(item.id)}><PersonPinIcon
+                                title={<Typography component={"h5"} className={classes.title}
+                                                   onClick={() => toGoodsSearchHandle(item.id)}><PersonPinIcon
                                     className={classes.titleIcon}/>{item.name}</Typography>}
-                                subheader={<><PhoneIcon className={classes.titleIcon2}/>{item.phone}</>}
+                                subheader={'@'+item.account}
                             />
                             <CardContent>
                                 <Typography variant="body1" color="textSecondary" component="p">
@@ -328,8 +365,18 @@ export const Supplier = () => {
                                 </Typography>
                             </CardContent>
                             <CardActions disableSpacing>
-                                <Typography className={classes.address}><RoomIcon
-                                    style={{color: '#2277cc'}}/>{item.address}</Typography>
+                                <FormControlLabel
+                                    className={classes.switch}
+                                    control={
+                                        <Switch
+                                            checked={item.root}
+                                            onChange={() => handleAuthChange(item)}
+                                            name="管理员权限"
+                                            color="primary"
+                                        />
+                                    }
+                                    label="管理员权限"
+                                />
                                 {/*<Typography></Typography>*/}
                                 {/*<Typography className={classes.date}>{dayjs(item.updateTime).format(FORMAT)}</Typography>*/}
                             </CardActions>
@@ -351,7 +398,7 @@ export const Supplier = () => {
                 aria-describedby="simple-modal-description"
             >
                 <Paper className={classes.paper}>
-                    <Typography component={"h5"}>注意：删除此内容也将删除所有与之关联的产品！！</Typography>
+                    <Typography component={"h5"}>注意：二次确认!!</Typography>
                     <div className={classes.buttons}>
                         <Button variant={"text"} onClick={handleConfirmRemove} color={"primary"}>确定</Button>
                         <Button variant={"text"} onClick={handleModalClose} color={"secondary"}>再想想</Button>

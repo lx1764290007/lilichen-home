@@ -95,7 +95,16 @@ export const HomePageAppBar = (props) => {
     const handleMenuClose = () => {
         setAnchorEl(null);
         handleMobileMenuClose();
+
     };
+    const toProfileHandle = ()=> {
+        handleMenuClose();
+        vcSubscribePublish.public("onNavigate", "/profile");
+    }
+    const toPasswordHandle = ()=> {
+        handleMenuClose();
+        vcSubscribePublish.public("onNavigate", "/password");
+    }
     const onSubmit = (event)=> {
         const value = ref.current.querySelector("input")?.value;
         vcSubscribePublish.public("appOnSearch", value);
@@ -120,8 +129,8 @@ export const HomePageAppBar = (props) => {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+            <MenuItem onClick={toProfileHandle}>个人资料</MenuItem>
+            <MenuItem onClick={toPasswordHandle}>修改密码</MenuItem>
         </Menu>
     );
 

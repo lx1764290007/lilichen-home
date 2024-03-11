@@ -15,6 +15,11 @@ import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
 import BookmarksIcon from '@material-ui/icons/Bookmarks';
 import OfflineBoltIcon from '@material-ui/icons/OfflineBolt';
 import {NotFound} from "../views/404/NotFound";
+import {Profile, ProfileEditor} from "../views/user/Profile";
+import {Unauthorized} from "../views/404/Unauthorized";
+import {UpdatePassword} from "../views/password/Password";
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import {UserList} from "../views/user/UserList";
 export const routes = [
     {
         component: <HomePage />,
@@ -131,6 +136,56 @@ export const routes = [
         icon: <SettingIcon />,
         bottomNavigationBarShow: true
     },
+    {
+        component: <Profile />,
+        title: "用户",
+        path: "/profile",
+        name: "用户",
+        appBar: <AppToolbar left={<Back />} title={"个人信息"} right={<ProfileEditor />} />,
+        navigation: false,
+        icon: <SettingIcon />,
+        bottomNavigationBarShow: false
+    },
+    {
+        component: <Profile editState />,
+        title: "添加用户",
+        path: "/profile-add",
+        name: "添加用户",
+        appBar: <AppToolbar left={<Back />} title={"添加用户"} />,
+        navigation: false,
+        icon: <SettingIcon />,
+        bottomNavigationBarShow: false
+    },
+    {
+        component: <UserList />,
+        title: "用户",
+        appBar: <HomePageAppBar title={"用户列表"} icon={<AccountCircleIcon />} />,
+        path: "/user-list",
+        name: "用户",
+        icon: <LibraryBooksIcon />,
+        navigation: false,
+        bottomNavigationBarShow: false
+    },
+    {
+        component: <UpdatePassword />,
+        title: "密码修改",
+        path: "/password",
+        name: "用户",
+        appBar: <AppToolbar left={<Back />} title={"修改密码"} />,
+        navigation: false,
+        icon: <SettingIcon />,
+        bottomNavigationBarShow: false
+    },
+
+    {
+        component: <Unauthorized />,
+        title: "403",
+        path: "/unauthorized",
+        name: "403",
+        navigation: false,
+        bottomNavigationBarShow: false
+    },
+
     {
         component: <NotFound />,
         title: "404",

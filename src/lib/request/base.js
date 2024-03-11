@@ -1,5 +1,6 @@
 import qs from "qs";
 import eventBus from "vc-subscribe-publish";
+import vcSubscribePublish from "vc-subscribe-publish";
 
 let timeout = null;
 
@@ -27,6 +28,7 @@ export const onResponseHandle = function (res, resolve, reject) {
         onResponseError(res, reject);
     } else if (res.status === 403) {
         reject(res.message);
+        vcSubscribePublish.public("onNavigate", "/unauthorized");
     } else {
         if (!res.ok) {
             onResponseError(res, reject);
