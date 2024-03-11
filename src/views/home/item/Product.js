@@ -244,7 +244,7 @@ export const ProductItem = () => {
         }
     }
     return (
-        <div className={`${classes.root} ${mc.mStyle}`}>
+        <div className={`${classes.root} ${mc.mStyle}`} {...mc.mobileHook}>
 
             {p[0] && <div className={classes.imgPreviewWrapper}><Typography
                 className={classes.previewText}>预览图的长度可能会被裁剪，但这不影响实际效果</Typography>

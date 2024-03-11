@@ -45,7 +45,7 @@ export const UpdatePassword = () => {
         }
     }
     return (
-        <div className={`${classes.root} ${mc.mStyle}`}>
+        <div className={`${classes.root} ${mc.mStyle}`} {...mc.mobileHook}>
             <form className={classes.form} noValidate autoComplete="off" onSubmit={onSubmit}>
                 <TextField type="password"
                            onInput={(event) => setPassword(event.target.value)}

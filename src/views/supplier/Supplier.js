@@ -302,7 +302,7 @@ export const Supplier = () => {
                     {transformY >= BONUS / 2 &&
                         <div style={{position: "absolute", padding: 5, width: "100%",boxSizing:'border-box'}}><Loading/></div>}
                     <div ref={scrollRef}
-                         style={{transform: `translateY(${transformY}px)`}}
+                         style={{transform: `translateY(${transformY}px)`,[mc.mobileHook.height? 'height':'']:mc.mobileHook.height}}
                          className={`${classes.list} ${mc.mStyle}`}
                          onTouchEnd={onTouchendHandler} onTouchMove={onTouchmoveHandler} onScroll={run}>
                         {newCol.map(item => <Card key={item.id} className={classes.card} >

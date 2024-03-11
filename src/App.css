@@ -4,7 +4,7 @@
     letter-spacing: 1;
 }
 #root {
-    height: 100vh;
+    height: 100%;
     box-sizing: border-box;
     overflow-y: hidden;
     background: linear-gradient(to bottom, #f1f1f1, #ececec);

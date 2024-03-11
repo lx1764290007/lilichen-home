@@ -124,7 +124,7 @@ export const Login = () => {
         event.preventDefault();
     }
     return (
-        <div className={mc.mStyle}>
+        <div className={mc.mStyle} {...mc.mobileHook}>
             <img src={IMAGES[RANDOM_NUMBER]} alt={"funny"} className={classesRoot.img}/>
             <form className={classesRoot.root} autoComplete="off" onSubmit={onSubmit}>
                 <TextField error={Boolean(accountErrorText)} ref={accountValue} label="账号"

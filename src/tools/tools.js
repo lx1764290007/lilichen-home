@@ -20,3 +20,27 @@ export const autoCol = (params = []) => {
 }
 
 export const BONUS = 30;
+
+export const requestFullscreen = ()=> {
+    const element = document.documentElement; // 获取要全屏显示的元素，通常使用整个文档元素
+    if (element.requestFullscreen) {
+        element.requestFullscreen();
+    } else if (element.mozRequestFullScreen) { // 兼容Firefox
+        element.mozRequestFullScreen();
+    } else if (element.webkitRequestFullscreen) { // 兼容Chrome和Safari
+        element.webkitRequestFullscreen();
+    } else if (element.msRequestFullscreen) { // 兼容IE
+        element.msRequestFullscreen();
+    }
+}
+export const exitFullscreen = ()=> {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+    }
+}

@@ -87,7 +87,7 @@ export const SupplierItem = (props)=> {
         vcSubscribePublish.public("onMessage", "已保存！！");
         vcSubscribePublish.public("onNavigate", -1);
     }
-     return <div className={`${classes.root} ${mc.mStyle}`}>
+     return <div className={`${classes.root} ${mc.mStyle}`} {...mc.mobileHook}>
         <form onSubmit={onSubmit} className={classes.form} noValidate autoComplete="off">
             <TextField
                 margin="dense"

@@ -18,9 +18,9 @@ export const fetchUserSearch = async (data)=>{
         data
     });
 };
-export const fetchUserAdd = async (data)=>{
+export const fetchUserRegister = async (data)=>{
     return await fetchHandle({
-        url: "user-add",
+        url: "register",
         config: {
             method: "POST"
         },

@@ -338,7 +338,7 @@ export const AdvancedGoodsList = () => {
                     {transformY >= BONUS / 2 &&
                         <div style={{position: "absolute", padding: 5, width: "100%"}}><Loading/></div>}
                     <div ref={scrollRef}
-                               style={{transform: `translateY(${transformY}px)`}}
+                               style={{transform: `translateY(${transformY}px)`, [mc.mobileHook.height? 'height':'']:mc.mobileHook.height}}
                                className={`${classes.list} ${mc.mStyle}`}
                                onTouchEnd={onTouchendHandler} onTouchMove={onTouchmoveHandler} onScroll={run}>
                         {newCol.map((item, key) => (
@@ -347,7 +347,7 @@ export const AdvancedGoodsList = () => {
                     </div>
                 </React.Fragment>}
             {newCol.length < 1 &&
-                <div className={mc.mStyle} style={{width: '100%', paddingTop: 100, boxSizing: 'border-box'}}><Empty/></div>}
+                <div className={mc.mStyle} style={{width: '100%', paddingTop: 100, boxSizing: 'border-box',[mc.mobileHook.height? 'height':'']:mc.mobileHook.height}}><Empty/></div>}
             {showFab && <Fab className={classes.fab} color="primary" aria-label="add" onClick={toAddItemHandle}>
                 <AddIcon/>
             </Fab> }

@@ -99,9 +99,9 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         fontWeight: 600,
-        cursor: 'pointer',
+       // cursor: 'pointer',
         '&:hover': {
-            color: '#539ee1'
+           // color: '#539ee1'
         }
     },
     titleIcon: {
@@ -311,7 +311,7 @@ export const UserList = () => {
 
     }
     const toGoodsSearchHandle = async (id) => {
-        vcSubscribePublish.public("onNavigate", "/search-goods-list?supplierId=" + id);
+       // vcSubscribePublish.public("onNavigate", "/search-goods-list?supplierId=" + id);
     }
     return (
         <div className={classes.supplierRoot}>
@@ -338,7 +338,7 @@ export const UserList = () => {
                         <div style={{position: "absolute", padding: 5, width: "100%", boxSizing: 'border-box'}}>
                             <Loading/></div>}
                     <div ref={scrollRef}
-                         style={{transform: `translateY(${transformY}px)`}}
+                         style={{transform: `translateY(${transformY}px)`, [mc.mobileHook.height? 'height':'']:mc.mobileHook.height}}
                          className={`${classes.list} ${mc.mStyle}`}
                          onTouchEnd={onTouchendHandler} onTouchMove={onTouchmoveHandler} onScroll={run}>
                         {newCol.map(item => <Card key={item.id} className={classes.card}>

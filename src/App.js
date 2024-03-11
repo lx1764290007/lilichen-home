@@ -15,6 +15,7 @@ import Typography from "@material-ui/core/Typography";
 import {ErrorOutline} from "@material-ui/icons";
 import StyleGlobal from "./global.module.css";
 
+
 const useStyles = makeStyles((theme) => ({
     menuButton: {
         marginRight: theme.spacing(2),
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     },
     snackbar: {
         [theme.breakpoints.down('xs')]: {
-             top: 60,
+            top: 60,
         }
     },
     snackbarError: {
@@ -67,10 +68,12 @@ const outerTheme = createTheme({
 const Style = {
     container: {
         backgroundColor: 'aliceblue',
-        padding: 0
+        padding: 0,
+        overflow: 'hidden'
     }
 }
 export const Context = React.createContext(null);
+
 function App() {
     const classes = useStyles();
     const navigate = useNavigate();
@@ -82,7 +85,8 @@ function App() {
     const [message, setMessage] = useState("UNKNOWN_MESSAGE");
     const [errorMessageOpen, setErrorMessageOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState("UNKNOWN_ERROR_MESSAGE");
-    const childStyle = useMemo(()=> routes.find(it => it.path === location.pathname)?.bottomNavigationBarShow? StyleGlobal.rc_container_with_navigation:StyleGlobal.rc_container_without_navigation, [location]);
+    const childStyle = useMemo(() => routes.find(it => it.path === location.pathname)?.bottomNavigationBarShow ? StyleGlobal.rc_container_with_navigation : StyleGlobal.rc_container_without_navigation, [location]);
+    const initHeight =  useMemo(() => routes.find(it => it.path === location.pathname)?.bottomNavigationBarShow ? window.innerHeight - 64 - 64 : window.innerHeight - 64, [location]);//`calc(${window.innerHeight} )`
     const onRouteChangeHandler = (_, newValue) => {
         // setMenuValue(newValue);
         navigate(newValue);
@@ -98,47 +102,51 @@ function App() {
             setErrorMessage(args[0]);
             setErrorMessageOpen(true);
         });
-        
+
         vcSubscribePublish.subscribe("onNavigate", (args) => {
             navigate(args[0]);
         })
-        return ()=> {
+
+        return () => {
             vcSubscribePublish.unsubscribe("onMessage");
             vcSubscribePublish.unsubscribe("onErrorMessage");
             vcSubscribePublish.unsubscribe("onNavigate");
+
         }
+
     })
+    const mobileHook = /Mobi|Android|iPhone/i.test(navigator.userAgent)? {height:initHeight + 'px'}:{};
     return (
         <div className="App">
             <ThemeProvider theme={outerTheme}>
-                <Context.Provider value={{mStyle: childStyle}}>
-                <Container style={Style.container} maxWidth="md" fixed>
-                    {appBar}
-                    <Routes>
-                        {
-                            routes.map(item => {
-                                return <Route path={item.path} key={item.path} name={item.name}
-                                              element={item.component}/>
-                            })
-                        }
-                    </Routes>
-                    {bottomNavigationBarShow && <BottomNavigation
-                        value={menuValue_}
-                        size={"sm"}
-                        className={classes.bottomBar}
-                        onChange={onRouteChangeHandler}
-                        showLabels
-                    >
-                        {
-                            routes.filter(it => {
-                                return it.navigation
-                            }).map(it => {
-                                return <BottomNavigationAction key={it.name} value={it.path} label={it.name}
-                                                               icon={it.icon}/>
-                            })
-                        }
-                    </BottomNavigation>}
-                </Container>
+                <Context.Provider value={{mStyle: childStyle, mobileHook}}>
+                    <Container style={Style.container} maxWidth="md" fixed>
+                        {appBar}
+                        <Routes>
+                            {
+                                routes.map(item => {
+                                    return <Route path={item.path} key={item.path} name={item.name}
+                                                  element={item.component}/>
+                                })
+                            }
+                        </Routes>
+                        {bottomNavigationBarShow && <BottomNavigation
+                            value={menuValue_}
+                            size={"sm"}
+                            className={classes.bottomBar}
+                            onChange={onRouteChangeHandler}
+                            showLabels
+                        >
+                            {
+                                routes.filter(it => {
+                                    return it.navigation
+                                }).map(it => {
+                                    return <BottomNavigationAction key={it.name} value={it.path} label={it.name}
+                                                                   icon={it.icon}/>
+                                })
+                            }
+                        </BottomNavigation>}
+                    </Container>
                 </Context.Provider>
                 <Snackbar
                     anchorOrigin={{
@@ -165,10 +173,10 @@ function App() {
                         horizontal: 'center',
                     }}
                     className={classes.snackbarError}
-                    open={errorMessageOpen} autoHideDuration={3000} onClose={()=> setErrorMessageOpen(false)}>
-                     <div className={classes.errorContent}>
-                         <ErrorOutline className={classes.errorIcon} /><Typography>{errorMessage}</Typography>
-                     </div>
+                    open={errorMessageOpen} autoHideDuration={3000} onClose={() => setErrorMessageOpen(false)}>
+                    <div className={classes.errorContent}>
+                        <ErrorOutline className={classes.errorIcon}/><Typography>{errorMessage}</Typography>
+                    </div>
                 </Snackbar>
             </ThemeProvider>
         </div>

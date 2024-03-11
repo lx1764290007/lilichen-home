@@ -276,7 +276,7 @@ export const AdvancedImageList = () => {
                     {transformY >= BONUS / 2 &&
                         <div style={{position: "absolute", padding: 5, width: "100%"}}><Loading/></div>}
                     <ImageList ref={scrollRef} rowHeight={230} gap={1}
-                               style={{transform: `translateY(${transformY}px)`}}
+                               style={{transform: `translateY(${transformY}px)`,[mc.mobileHook.height? 'height':'']:mc.mobileHook.height}}
                                className={`${classes.imageList} ${mc.mStyle}`}
                                onTouchEnd={onTouchendHandler} onTouchMove={onTouchmoveHandler} onScroll={run}>
                         {newCol.map((item, key) => (
