@@ -20,6 +20,8 @@ import {Unauthorized} from "../views/404/Unauthorized";
 import {UpdatePassword} from "../views/password/Password";
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import {UserList} from "../views/user/UserList";
+import {SettingPage} from "../views/setting/Setting";
+import AndroidIcon from '@material-ui/icons/Android';
 export const routes = [
     {
         component: <HomePage />,
@@ -127,11 +129,11 @@ export const routes = [
         bottomNavigationBarShow: false
     },
     {
-        component: <div>page3</div>,
+        component: <SettingPage />,
         title: "设置",
         path: "/setting",
         name: "设置",
-        appBar: <AppToolbar />,
+        appBar: <AppToolbar title={"设置"} left={<AndroidIcon />} />,
         navigation: true,
         icon: <SettingIcon />,
         bottomNavigationBarShow: true

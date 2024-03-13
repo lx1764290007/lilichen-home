@@ -342,7 +342,7 @@ export const AdvancedGoodsList = () => {
                                className={`${classes.list} ${mc.mStyle}`}
                                onTouchEnd={onTouchendHandler} onTouchMove={onTouchmoveHandler} onScroll={run}>
                         {newCol.map((item, key) => (
-                            <AdvancedGoodsListItem onOpenPicPreview={previewOnOpen} dataSource={item} onMoreActionClick={onMoreActionClick} />
+                            <AdvancedGoodsListItem key={key} onOpenPicPreview={previewOnOpen} dataSource={item} onMoreActionClick={onMoreActionClick} />
                         ))}
                     </div>
                 </React.Fragment>}

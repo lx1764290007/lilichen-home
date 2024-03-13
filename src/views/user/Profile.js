@@ -46,6 +46,8 @@ export const Profile = (props) => {
                     account: obj.account,
                     root,
                     remark: obj.remark
+                }).then(()=> {
+                    vcSubscribePublish.public("onNavigate", -1);
                 })
             } else {
                 vcSubscribePublish.public("onErrorMessage", "名称、密码、登录名必填～");
