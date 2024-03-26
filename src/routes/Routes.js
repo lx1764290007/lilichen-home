@@ -18,7 +18,6 @@ import {NotFound} from "../views/404/NotFound";
 import {Profile, ProfileEditor} from "../views/user/Profile";
 import {Unauthorized} from "../views/404/Unauthorized";
 import {UpdatePassword} from "../views/password/Password";
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import {UserList} from "../views/user/UserList";
 import {SettingPage} from "../views/setting/Setting";
 import AndroidIcon from '@material-ui/icons/Android';
@@ -59,7 +58,8 @@ export const routes = [
         appBar: <HomePageAppBar title={"供应商"} icon={<OfflineBoltIcon />} />,
         navigation: true,
         icon: <RedditIcon />,
-        bottomNavigationBarShow: true
+        bottomNavigationBarShow: true,
+        adminOnly: true
     },
     {
         component: <SupplierItem />,
@@ -82,38 +82,38 @@ export const routes = [
     //SupplierItem
     {
         component: <GoodsItem />,
-        title: "布料添加",
-        appBar: <AppToolbar left={<Back />} title={"布料添加"} right={<GoodsItemTopRightButton />} />,
+        title: "面料添加",
+        appBar: <AppToolbar left={<Back />} title={"面料添加"} right={<GoodsItemTopRightButton />} />,
         path: "/goods-add",
-        name: "布料添加",
+        name: "面料添加",
         navigation: false,
         bottomNavigationBarShow: false
     },
     {
         component: <GoodsItem />,
-        title: "布料编辑",
-        appBar: <AppToolbar left={<Back />} title={"布料编辑"} right={<GoodsItemTopRightButton />} />,
+        title: "面料编辑",
+        appBar: <AppToolbar left={<Back />} title={"面料编辑"} right={<GoodsItemTopRightButton />} />,
         path: "/goods-update",
-        name: "布料编辑",
+        name: "面料编辑",
         navigation: false,
         bottomNavigationBarShow: false
     },
     {
         component: <AdvancedGoodsList />,
-        title: "布料",
-        appBar: <HomePageAppBar placeholder={SEARCH_PLACEHOLDER} title={"布料列表"} icon={<BookmarksIcon />} />,
+        title: "面料",
+        appBar: <HomePageAppBar placeholder={SEARCH_PLACEHOLDER} title={"面料列表"} icon={<BookmarksIcon />} />,
         path: "/goods-list",
-        name: "布料",
+        name: "面料",
         icon: <LibraryBooksIcon />,
         navigation: true,
         bottomNavigationBarShow: true
     },
     {
         component: <AdvancedGoodsList />,
-        title: "布料搜索结果",
-        appBar: <AppToolbar left={<Back />} title={"布料搜索结果"} />,
+        title: "面料搜索结果",
+        appBar: <AppToolbar left={<Back />} title={"面料搜索结果"} />,
         path: "/search-goods-list",
-        name: "布料类型",
+        name: "面料类型",
         icon: <LibraryBooksIcon />,
         navigation: false,
         bottomNavigationBarShow: false
@@ -136,7 +136,8 @@ export const routes = [
         appBar: <AppToolbar title={"设置"} left={<AndroidIcon />} />,
         navigation: true,
         icon: <SettingIcon />,
-        bottomNavigationBarShow: true
+        bottomNavigationBarShow: true,
+        adminOnly: true
     },
     {
         component: <Profile />,
@@ -161,7 +162,7 @@ export const routes = [
     {
         component: <UserList />,
         title: "用户",
-        appBar: <HomePageAppBar title={"用户列表"} icon={<AccountCircleIcon />} />,
+        appBar: <HomePageAppBar title={"用户列表"} icon={<Back />} />,
         path: "/user-list",
         name: "用户",
         icon: <LibraryBooksIcon />,

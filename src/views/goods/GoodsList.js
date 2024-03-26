@@ -18,7 +18,7 @@ import {Loading} from "../../components/Loading/Loading";
 import {Context} from "../../App";
 import vcSubscribePublish from "vc-subscribe-publish";
 import {fetchGoodsList, fetchGoodsRemove, fetchGoodsSearch} from "../../lib/request/goods";
-import {IMAGE_TYPE, PAGE_SIZE} from "../../lib/static";
+import {IMAGE_TYPE, LOCAL_STORAGE_USER, PAGE_SIZE} from "../../lib/static";
 import {Empty} from "../../components/Empty/Empty";
 import AddIcon from '@material-ui/icons/Add';
 import Modal from "@material-ui/core/Modal";
@@ -144,12 +144,15 @@ export const AdvancedGoodsList = () => {
     const [productList, setProductList] = useState([]);
     const [supplierList, setSupplierList] = useState([]);
     const location = useLocation();
-    const showFab = useMemo(()=> /\?productId=/g.test(location.search) === false && /\?supplierId=/g.test(location.search) === false, [location])
+    const isAdmin =  window.localStorage.getItem(LOCAL_STORAGE_USER)? JSON.parse(window.localStorage.getItem(LOCAL_STORAGE_USER))?.root === 1:false;
+
+    const showFab = useMemo(()=> /\?productId=/g.test(location.search) === false && /\?supplierId=/g.test(location.search) === false && isAdmin, [location])
     const newCol = useMemo(() => dataSource.map(it=>{
         return {
             ...it,
             _productName: productList.find(its=> its.id === it.product)?.name,
-            _supplierName: supplierList.find(its=> its.id === it.company)?.name
+            _supplierName: supplierList.find(its=> its.id === it.company)?.name,
+            _phone: supplierList.find(its=> its.id === it.company)?.phone
         }
     }), [dataSource, productList, supplierList]);
     const handleClickAway = (event) => {
@@ -190,7 +193,7 @@ export const AdvancedGoodsList = () => {
         }
     }
     const handleLoadMore = async () => {
-        if (dataSource.length < total) {
+        if (dataSource?.length < total) {
             await fetchData(current + 1, paramName);
             setCurrent(current + 1);
         }
@@ -333,7 +336,7 @@ export const AdvancedGoodsList = () => {
                     </Fade>
                 )}
             </Popper>
-            {newCol.length > 0 &&
+            {newCol?.length > 0 &&
                 <React.Fragment>
                     {transformY >= BONUS / 2 &&
                         <div style={{position: "absolute", padding: 5, width: "100%"}}><Loading/></div>}
@@ -346,7 +349,7 @@ export const AdvancedGoodsList = () => {
                         ))}
                     </div>
                 </React.Fragment>}
-            {newCol.length < 1 &&
+            {newCol?.length < 1 &&
                 <div className={mc.mStyle} style={{width: '100%', paddingTop: 100, boxSizing: 'border-box',[mc.mobileHook.height? 'height':'']:mc.mobileHook.height}}><Empty/></div>}
             {showFab && <Fab className={classes.fab} color="primary" aria-label="add" onClick={toAddItemHandle}>
                 <AddIcon/>

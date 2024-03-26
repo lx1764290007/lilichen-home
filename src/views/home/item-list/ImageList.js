@@ -17,7 +17,7 @@ import {Loading} from "../../../components/Loading/Loading";
 import {Context} from "../../../App";
 import vcSubscribePublish from "vc-subscribe-publish";
 import {fetchProductList, fetchProductRemove} from "../../../lib/request/produce";
-import {IMAGE_TYPE, PAGE_SIZE} from "../../../lib/static";
+import {IMAGE_TYPE, LOCAL_STORAGE_USER, PAGE_SIZE} from "../../../lib/static";
 import {Empty} from "../../../components/Empty/Empty";
 import AddIcon from '@material-ui/icons/Add';
 import dayjs from "dayjs";
@@ -129,6 +129,8 @@ export const AdvancedImageList = () => {
     const [touchMoveY, setTouchMoveY] = useState(9999999);
     const [transformY, setTransformY] = useState(0);
     const scrollRef = useRef(null);
+    const isAdmin =  window.localStorage.getItem(LOCAL_STORAGE_USER)? JSON.parse(window.localStorage.getItem(LOCAL_STORAGE_USER))?.root === 1:false;
+
     const [current, setCurrent] = useState(1);
     const [total, setTotal] = useState(0);
     const [paramName, setParamName] = useState(null);
@@ -281,12 +283,12 @@ export const AdvancedImageList = () => {
                                onTouchEnd={onTouchendHandler} onTouchMove={onTouchmoveHandler} onScroll={run}>
                         {newCol.map((item, key) => (
                             <ImageListItem key={key} cols={item.featured ? 2 : 1} rows={item.featured ? 2 : 1}>
-                                <IconButton className={classes.deleteIcon} onClick={() => onHandleRemove(item.id)}>
+                                {isAdmin && <IconButton className={classes.deleteIcon} onClick={() => onHandleRemove(item.id)}>
                                     <DeleteOutlineIcon/>
-                                </IconButton>
-                                <img src={item.img} alt={item.title} onClick={()=> toSearchGoods(item.id)} />
+                                </IconButton>}
+                                <img src={item.img} alt={item.title} onClick={() => previewOnOpen(item.uuid, item)} />
                                 <ImageListItemBar
-                                    title={<div onClick={() => previewOnOpen(item.uuid, item)}>{item.title}</div>}
+                                    title={<div onClick={()=> toSearchGoods(item.id)} >{item.title}</div>}
                                     position="top"
                                     actionIcon={
                                         <IconButton aria-label={`star ${item.title}`} className={classes.icon}>
@@ -321,7 +323,7 @@ export const AdvancedImageList = () => {
                     </ImageList>
                 </React.Fragment>}
             {newCol.length < 1 &&
-                <div className={mc.mStyle} style={{width: '100%', paddingTop: 100}}><Empty/></div>}
+                <div className={mc.mStyle}  style={{width: '100%', paddingTop: 100,[mc.mobileHook.height? 'height':'']:mc.mobileHook.height}}><Empty/></div>}
             <ImagePreview type={IMAGE_TYPE.PRODUCT} open={previewOpen} uuid={picPreviewId} onClose={previewOnClose}/>
             <Fab className={classes.fab} color="primary" aria-label="add" onClick={toAddItemHandle}>
                 <AddIcon/>

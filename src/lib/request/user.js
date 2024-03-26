@@ -55,3 +55,11 @@ export const fetchUserRemove = async (data)=>{
     });
 };
 
+export const logout = async ()=>{
+    return await fetchHandle({
+        url: "logout",
+        config: {
+            method: "POST"
+        }
+    });
+};

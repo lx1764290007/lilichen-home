@@ -4,7 +4,7 @@ import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import {BONUS} from "../../tools/tools";
 import PersonPinIcon from '@material-ui/icons/PersonPin';
-import PhoneIcon from '@material-ui/icons/Phone';
+
 import {
     Avatar,
     ButtonGroup,
@@ -134,6 +134,11 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
         textAlign: 'right',
         marginTop: theme.spacing(2)
+    },
+    phone: {
+        color: '#4191ec',
+        fontSize: 14,
+        fontWeight: 600
     }
 }));
 
@@ -285,7 +290,7 @@ export const Supplier = () => {
     }
     return (
         <div className={classes.supplierRoot}>
-            {newCol?.length > 0 &&
+
                 <React.Fragment><Popper open={open} anchorEl={anchorEl} placement={"left-end"} transition>
                     {({TransitionProps}) => (
                         <Fade {...TransitionProps} timeout={100}>
@@ -305,7 +310,7 @@ export const Supplier = () => {
                          style={{transform: `translateY(${transformY}px)`,[mc.mobileHook.height? 'height':'']:mc.mobileHook.height}}
                          className={`${classes.list} ${mc.mStyle}`}
                          onTouchEnd={onTouchendHandler} onTouchMove={onTouchmoveHandler} onScroll={run}>
-                        {newCol.map(item => <Card key={item.id} className={classes.card} >
+                        {newCol && newCol?.map(item => <Card key={item.id} className={classes.card} >
                             <CardHeader
                                 avatar={
                                     <Avatar aria-label="recipe" className={classes.avatar}>
@@ -320,7 +325,7 @@ export const Supplier = () => {
                                 }
                                 title={<Typography component={"h5"} className={classes.title} onClick={()=> toGoodsSearchHandle(item.id)}><PersonPinIcon
                                     className={classes.titleIcon}/>{item.name}</Typography>}
-                                subheader={<><PhoneIcon className={classes.titleIcon2}/>{item.phone}</>}
+                                subheader={<a className={classes.phone} href={`tel:${item.phone}`}>tel: {item.phone}</a>}
                             />
                             <CardContent>
                                 <Typography variant="body1" color="textSecondary" component="p">
@@ -334,11 +339,11 @@ export const Supplier = () => {
                                 {/*<Typography className={classes.date}>{dayjs(item.updateTime).format(FORMAT)}</Typography>*/}
                             </CardActions>
                         </Card>)}
+                        {(!newCol || newCol?.length < 1) && <div className={mc.mStyle}
+                                                    style={{width: '100%', paddingTop: 100, boxSizing: 'border-box',[mc.mobileHook.height? 'height':'']:mc.mobileHook.height}}><Empty/></div>}
                     </div>
+                </React.Fragment>
 
-                </React.Fragment>}
-            {newCol.length < 1 && <div className={mc.mStyle}
-                                       style={{width: '100%', paddingTop: 100, boxSizing: 'border-box'}}><Empty/></div>}
             <Fab className={classes.fab} color="primary" aria-label="add" onClick={toAddItemHandle}>
                 <AddIcon/>
             </Fab>

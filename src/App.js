@@ -14,6 +14,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Typography from "@material-ui/core/Typography";
 import {ErrorOutline} from "@material-ui/icons";
 import StyleGlobal from "./global.module.css";
+import {LOCAL_STORAGE_USER} from "./lib/static";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -68,8 +69,7 @@ const outerTheme = createTheme({
 const Style = {
     container: {
         backgroundColor: 'aliceblue',
-        padding: 0,
-        overflow: 'hidden'
+        padding: 0
     }
 }
 export const Context = React.createContext(null);
@@ -78,6 +78,7 @@ function App() {
     const classes = useStyles();
     const navigate = useNavigate();
     const location = useLocation();
+    const isAdmin =  window.localStorage.getItem(LOCAL_STORAGE_USER)? JSON.parse(window.localStorage.getItem(LOCAL_STORAGE_USER))?.root === 1:false;
     const appBar = useMemo(() => routes.find(it => it.path === location.pathname)?.appBar, [location]);
     const menuValue_ = useMemo(() => routes.find(it => it.path === location.pathname)?.path, [location]);
     const bottomNavigationBarShow = useMemo(() => routes.find(it => it.path === location.pathname)?.bottomNavigationBarShow, [location]);
@@ -104,7 +105,10 @@ function App() {
         });
 
         vcSubscribePublish.subscribe("onNavigate", (args) => {
-            navigate(args[0]);
+            if(args && args[0] && args[0] !== window.location.pathname){
+                navigate(args[0]);
+            }
+
         })
 
         return () => {
@@ -117,7 +121,7 @@ function App() {
     })
     const mobileHook = /Mobi|Android|iPhone/i.test(navigator.userAgent)? {height:initHeight + 'px'}:{};
     return (
-        <div className="App">
+        <div className="App" style={{height: window.innerHeight}}>
             <ThemeProvider theme={outerTheme}>
                 <Context.Provider value={{mStyle: childStyle, mobileHook}}>
                     <Container style={Style.container} maxWidth="md" fixed>
@@ -139,7 +143,7 @@ function App() {
                         >
                             {
                                 routes.filter(it => {
-                                    return it.navigation
+                                    return it.navigation && (!it.adminOnly || isAdmin)
                                 }).map(it => {
                                     return <BottomNavigationAction key={it.name} value={it.path} label={it.name}
                                                                    icon={it.icon}/>

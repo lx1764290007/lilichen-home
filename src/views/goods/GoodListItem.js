@@ -9,6 +9,7 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import PersonPinIcon from "@material-ui/icons/PersonPin";
 import {HomeWork} from "@material-ui/icons";
 import dayjs from "dayjs";
+import {LOCAL_STORAGE_USER} from "../../lib/static";
 
 const useStyles = makeStyles((theme) => ({
     root2: {
@@ -89,10 +90,10 @@ const useStyles = makeStyles((theme) => ({
     },
     date: {
         position: "absolute",
-        top: 100,
+        bottom: 70,
+        right: '3vw',
         color: '#fefefe',
         zIndex: 1,
-        right: 10,
         fontSize: 14
     },
     content: {
@@ -100,6 +101,16 @@ const useStyles = makeStyles((theme) => ({
         flexFlow: 'row nowrap',
         justifyContent: 'space-between',
         alignItems: 'flex-start'
+    },
+    phone: {
+        position: "absolute",
+        marginTop: 26,
+        fontSize: 14,
+        color: '#4191ec',
+        left: 75,
+    },
+    phoneIcon: {
+        fontSize: 15
     }
 }));
 const FORMAT = "YYYY-MM-DD";
@@ -124,6 +135,7 @@ const FORMAT = "YYYY-MM-DD";
 export const AdvancedGoodsListItem = (props) => {
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState(false);
+    const isAdmin =  window.localStorage.getItem(LOCAL_STORAGE_USER)? JSON.parse(window.localStorage.getItem(LOCAL_STORAGE_USER))?.root === 1:false;
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
@@ -139,24 +151,24 @@ export const AdvancedGoodsListItem = (props) => {
                     </Avatar>
                 }
                 action={
-                    <IconButton aria-label="settings"
+                    isAdmin && <IconButton aria-label="settings"
                                 onClick={(event) => props.onMoreActionClick?.(event, props.dataSource)}>
                         <MoreVertIcon/>
                     </IconButton>
                 }
                 title={<Typography component={"h4"} className={classes.title}><PersonPinIcon
                     className={classes.titleIcon}/>{props.dataSource?.name}</Typography>}
-                subheader={<Typography color={"primary"} paragraph variant={'subtitle2'} component={'p'}><HomeWork
-                    className={classes.titleIcon2}/>{props.dataSource?._supplierName}</Typography>}
+                subheader={props.dataSource?._supplierName && <Typography color={"primary"} paragraph variant={'subtitle2'} component={'p'}><HomeWork
+                    className={classes.titleIcon2}/>{props.dataSource?._supplierName}<a className={classes.phone} href={`tel:${props.dataSource?._phone}`}>tel: {props.dataSource?._phone}</a></Typography>}
             />
             <CardMedia
                 className={classes.media}
                 image={props.dataSource?.preview}
-                title="pics"
+                title={props.dataSource?.description}
                 onClick={() => props.onOpenPicPreview?.(props.dataSource?.uuid)}
             />
-            <Typography
-                className={classes.date}>{dayjs(props.dataSource?.updateTime).format(FORMAT)}</Typography>
+            {!expanded && <Typography
+                className={classes.date}>{dayjs(props.dataSource?.updateTime).format(FORMAT)}</Typography>}
             <CardContent style={{position: 'relative'}} className={classes.content}>
                 <Typography paragraph variant={'body2'} className={classes.desc} color={'textPrimary'} component={'p'}>
                     {props.dataSource?.description}

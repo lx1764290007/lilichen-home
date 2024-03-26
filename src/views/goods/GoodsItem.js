@@ -25,6 +25,7 @@ import {ProductSelector} from "../../components/ProductSeletor/ProductSelector";
 import {SupplierSelector} from "../../components/SupplierSelector/SupplierSelector";
 import {IMAGE_TYPE} from "../../lib/static";
 
+
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
@@ -248,7 +249,7 @@ export const GoodsItem = () => {
         }
     }
     return (
-        <div className={`${classes.root} ${mc.mStyle}`} {...mc.mobileHook}>
+        <div className={`${classes.root} ${mc.mStyle}`} style={{height: window.innerHeight - 64}}>
 
             {p[0] && <div className={classes.imgPreviewWrapper}><Typography
                 className={classes.previewText}>预览图的长度可能会被裁剪，但这不影响实际效果</Typography>

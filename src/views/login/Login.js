@@ -117,8 +117,10 @@ export const Login = () => {
                 account: accountVal,
                 password: pwdVal
             }).then((res) => {
-                window.localStorage.setItem(LOCAL_STORAGE_USER, JSON.stringify(res.data));
-                vcSubscribePublish.public("onNavigate", "/");
+                if(res){
+                    window.localStorage.setItem(LOCAL_STORAGE_USER, JSON.stringify(res.data));
+                    vcSubscribePublish.public("onNavigate", "/");
+                }
             })
         }
         event.preventDefault();

@@ -13,6 +13,7 @@ import {AvatarDefault} from "../Avatar/Avatar";
 import vcSubscribePublish from "vc-subscribe-publish";
 import {InputAdornment} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
+import {logout as logoutFetch} from "../../lib/request/user";
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -118,6 +119,10 @@ export const HomePageAppBar = (props) => {
             vcSubscribePublish.public("appOnSearch", "");
         }
     }
+    const logout = async()=>{
+        await logoutFetch();
+        vcSubscribePublish.public("onNavigate", "/login");
+    }
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
         <Menu
@@ -131,6 +136,7 @@ export const HomePageAppBar = (props) => {
         >
             <MenuItem onClick={toProfileHandle}>个人资料</MenuItem>
             <MenuItem onClick={toPasswordHandle}>修改密码</MenuItem>
+            <MenuItem onClick={logout}>退出登录</MenuItem>
         </Menu>
     );
 

@@ -34,6 +34,12 @@ const useStyles = makeStyles((theme) => ({
         color: '#fff',
         backdropFilter: 'blur(2px)'
     },
+    item: {
+        '&:hover': {
+            backgroundColor: '#ebe9fa',
+            cursor: 'pointer'
+        }
+    }
 }));
 
 export const SettingPage = () => {
@@ -94,8 +100,8 @@ export const SettingPage = () => {
     const mc = React.useContext(Context);
     return (
         <div>
-            <List className={`${classes.root} ${mc.mStyle}`} {...mc.mobileHook}>
-                <ListItem onClick={toUserPage}>
+            <List className={`${classes.root} ${mc.mStyle}`} style={{...mc.mobileHook}}>
+                <ListItem onClick={toUserPage} className={classes.item}>
                     <ListItemIcon>
                         <AssignmentIndIcon/>
                     </ListItemIcon>
@@ -104,7 +110,7 @@ export const SettingPage = () => {
                         <ArrowRightIcon/>
                     </ListItemSecondaryAction>
                 </ListItem>
-                <ListItem onClick={systemRestartHandle}>
+                <ListItem onClick={systemRestartHandle} className={classes.item}>
                     <ListItemIcon>
                         <OfflineBoltIcon/>
                     </ListItemIcon>
@@ -113,7 +119,7 @@ export const SettingPage = () => {
                         <ArrowRightIcon/>
                     </ListItemSecondaryAction>
                 </ListItem>
-                <ListItem onClick={systemStopHandle}>
+                <ListItem onClick={systemStopHandle} className={classes.item}>
                     <ListItemIcon>
                         <PowerSettingsNewIcon/>
                     </ListItemIcon>
@@ -122,7 +128,7 @@ export const SettingPage = () => {
                         <ArrowRightIcon/>
                     </ListItemSecondaryAction>
                 </ListItem>
-                <ListItem onClick={onOpenDir}>
+                <ListItem onClick={onOpenDir} className={classes.item}>
                     <ListItemIcon>
                         <NoteIcon/>
                     </ListItemIcon>
@@ -131,7 +137,7 @@ export const SettingPage = () => {
                         <ArrowRightIcon/>
                     </ListItemSecondaryAction>
                 </ListItem>
-                <ListItem onClick={onOpenSourceDir}>
+                <ListItem onClick={onOpenSourceDir} className={classes.item}>
                     <ListItemIcon>
                         <ImageIcon/>
                     </ListItemIcon>
@@ -140,6 +146,7 @@ export const SettingPage = () => {
                         <ArrowRightIcon/>
                     </ListItemSecondaryAction>
                 </ListItem>
+
             </List>
             <Backdrop className={classes.backdrop} open={open}>
                 <CircularProgress color="inherit"/>
