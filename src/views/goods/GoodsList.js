@@ -146,7 +146,7 @@ export const AdvancedGoodsList = () => {
     const location = useLocation();
     const isAdmin =  window.localStorage.getItem(LOCAL_STORAGE_USER)? JSON.parse(window.localStorage.getItem(LOCAL_STORAGE_USER))?.root === 1:false;
 
-    const showFab = useMemo(()=> /\?productId=/g.test(location.search) === false && /\?supplierId=/g.test(location.search) === false && isAdmin, [location])
+    const showFab = useMemo(()=> /\?productId=/g.test(location.search) === false && /\?supplierId=/g.test(location.search) === false && isAdmin, [location, isAdmin])
     const newCol = useMemo(() => dataSource.map(it=>{
         return {
             ...it,

@@ -5,7 +5,7 @@ import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import {IMAGE_TYPE} from "../../lib/static";
 import {fetchProductPics} from "../../lib/request/produce";
-import {useSafeState} from "ahooks";
+import {useSafeState, useToggle} from "ahooks";
 import {Pagination} from "@material-ui/lab";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
@@ -27,7 +27,8 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
         width: '100%',
         maxWidth: 1000,
-        maxHeight: '100vh'
+        maxHeight: '100vh',
+        overflowX: 'auto'
     },
     img: {
         width: '100%',
@@ -37,7 +38,9 @@ const useStyles = makeStyles((theme) => ({
         color: '#333',
         textAlign: 'center',
         margin: '0 auto',
-        display: 'block'
+        display: 'block',
+        position: 'relative',
+        transition: '.3s all linear'
     },
     pagination: {
         backgroundColor: 'rgba(255,255,255,0.3)',
@@ -85,12 +88,16 @@ export const ImagePreview = (props) => {
     const classes = useStyles();
     const [dataSource, setDataSource] = useSafeState([]);
     const [previewIndex, setPreviewIndex] = useSafeState(1);
+    const [state, { toggle, setLeft }] = useToggle(false);
+
     const currentPath = useMemo(() => dataSource[previewIndex - 1]?.path, [previewIndex, dataSource]);
     const currentDesc = useMemo(() => dataSource[previewIndex - 1]?.description, [previewIndex, dataSource]);
     const handleClose = () => {
         props.onClose?.();
+        setLeft();
     };
     useEffect(() => {
+
         if (props.type === IMAGE_TYPE.PRODUCT && props.uuid) {
             fetchProductPics({
                 uuid: props.uuid
@@ -103,19 +110,44 @@ export const ImagePreview = (props) => {
             }).then(res => {
                 setDataSource(res.data);
             }).catch((e) => console.log(e));
+        } else if(props.data instanceof Array){
+            console.log(props.previewIndex)
+            setDataSource(props.data);
+
         }
         return () => {
             setPreviewIndex(1);
         }
         // eslint-disable-next-line
-    }, [props.uuid]);
-    useEffect(() => {
-        props.open && setPreviewIndex(1);
+    }, [props.uuid, props.data]);
+
+    useEffect(()=> {
+
+        if(props.previewIndex <= dataSource.length){
+            setPreviewIndex(props.previewIndex + 1 || 1);
+        }
         // eslint-disable-next-line
-    }, [props.open])
+    }, [props.previewIndex, dataSource.length])
+
     const onChange = (_, n) => {
         setPreviewIndex(n);
     }
+    const onScale = (event)=> {
+        const {width, height}  = event.target.getBoundingClientRect();
+        if(!state){
+            event.target.style.width = width * 2 + 'px';
+            event.target.style.maxWidth = "200%";
+            event.target.style.height = height * 2 + 'px';
+            event.target.style.maxHidth = "200%";
+        } else {
+            event.target.style.width = width / 2 + 'px';
+            event.target.style.maxWidth = "100%";
+            event.target.style.height = height / 2 + 'px';
+            event.target.style.maxHidth = "100%";
+        }
+        toggle();
+    }
+
     return (
         <div>
             <Modal
@@ -140,15 +172,19 @@ export const ImagePreview = (props) => {
                                 <Typography component={"h6"} className={classes.ty}>{currentDesc}</Typography>}
                             {currentPath &&
                                 <img alt={"图片加载失败！它可能在物理上已经不存在~"} className={`${classes.img}`}
+                                     onDoubleClick={onScale}
+
                                      src={currentPath}/>}
                             {dataSource.length > 0 &&
-                                <div className={classes.pagination}><Pagination className={classes.p} color="primary"
-                                                                                count={dataSource.length}
-                                                                                onChange={onChange}/></div>}
+                                 <div style={{display: state? 'none':'flex'}} className={classes.pagination}>
+                                     <Pagination className={classes.p} color="primary"
+                                                 count={dataSource.length}
+                                                 page={previewIndex }
+                                                 onChange={onChange}/></div>}
                         </div>
 
                     </Fade>
-                    {dataSource.length<1 && <h5 style={{color: '#fefefe',padding: '10px 20px'}}>~没有照骗~</h5> }
+                    {dataSource.length < 1 && <h5 style={{color: '#fefefe',padding: '10px 20px'}}>~没有照骗~</h5> }
 
                 </div>
             </Modal>

@@ -15,7 +15,7 @@ import {
 } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import {fetchFileRemove, fetchUploadGoods} from "../../lib/request/upload";
-import {useSafeState} from "ahooks";
+import {useSafeState, useToggle} from "ahooks";
 import AddIcon from "@material-ui/icons/Add";
 import TextField from "@material-ui/core/TextField";
 import {fetchGoodsAdd, fetchGoodsList, fetchGoodsPics, fetchGoodsUpdate} from "../../lib/request/goods";
@@ -24,6 +24,7 @@ import {useLocation} from "react-router-dom";
 import {ProductSelector} from "../../components/ProductSeletor/ProductSelector";
 import {SupplierSelector} from "../../components/SupplierSelector/SupplierSelector";
 import {IMAGE_TYPE} from "../../lib/static";
+import {ImagePreview} from "../../components/ImagePreviewById/ImagePreview";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -155,6 +156,8 @@ export const GoodsItem = () => {
     const [paths, setPaths] = useSafeState("");
     const [dialogOpen, setDialogOpen] = useSafeState(false);
     const [currentTargetIndex, setCurrentTargetIndex] = useSafeState(-1);
+    const [imgPreviewOpen, {toggle}] = useToggle(false);
+    const [previewCurrent, setPreviewCurrent] = useSafeState(1);
     // eslint-disable-next-line
     const p = useMemo(() => _data, [paths, currentTargetIndex]);
     const location = useLocation();
@@ -248,6 +251,10 @@ export const GoodsItem = () => {
             handleDelete(k, true);
         }
     }
+    const onOpenImgPreview = (key)=> {
+        setPreviewCurrent(key);
+        toggle();
+    }
     return (
         <div className={`${classes.root} ${mc.mStyle}`} style={{height: window.innerHeight - 64}}>
 
@@ -266,6 +273,7 @@ export const GoodsItem = () => {
                             <Typography className={classes.imgDescText}>{it.description}</Typography>}
                         <img className={classes.img}
                              src={it.path}
+                             onClick={()=> onOpenImgPreview(key)}
                              alt={"小预览"}/>
                         <IconButton className={classes.imgDescButton} onClick={() => onImgDescOpenHandle(key)}>
                             <AddIcon/>
@@ -277,6 +285,7 @@ export const GoodsItem = () => {
 
             <FormDialog open={dialogOpen} defaultValue={p[currentTargetIndex]?.description} onClose={onDialogClose}
                         onConfirm={onDialogConfirm}/>
+            <ImagePreview previewIndex={previewCurrent} data={p} open={imgPreviewOpen} onClose={toggle} />
         </div>
     );
 }
