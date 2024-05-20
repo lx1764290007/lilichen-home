@@ -89,8 +89,8 @@ export const LoginAppBarRight = () => {
 export const Login = () => {
     const mc = React.useContext(Context);
     const classesRoot = useStyles();
-    const accountValue = useRef(null);
-    const passwordValue = useRef(null);
+    const accountValue = useRef('preview');
+    const passwordValue = useRef('preview');
     const [accountErrorText, setAccountErrorText] = useState("");
     const [passwordErrorText, setPasswordErrorText] = useState("");
     useMount(() => {
